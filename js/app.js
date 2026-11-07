@@ -101,7 +101,7 @@ const INDICATOR_HELP_DATA = {
     title: 'Cartera de Suscriptores',
     icon: 'users',
     color: '#3b82f6',
-    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con el inventario inicial, reflejando el balance global y el ritmo de retención o contracción del parque de abonados.'
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con la cartera inicial, reflejando el balance global y el ritmo de retención o contracción de la cartera de abonados.'
   },
   balance: {
     badge: 'Balance de Flujos Netos',
@@ -1744,7 +1744,7 @@ const INDICATOR_HELP_DATA = {
     title: 'Cartera de Suscriptores',
     icon: 'users',
     color: '#3b82f6',
-    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con el inventario inicial, reflejando el balance global y el ritmo de retención o contracción del parque de abonados.'
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con la cartera inicial, reflejando el balance global y el ritmo de retención o contracción de la cartera de abonados.'
   },
   balance: {
     badge: 'Balance de Flujos Netos',
