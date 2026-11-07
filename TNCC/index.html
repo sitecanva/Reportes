@@ -109,6 +109,9 @@
             <i data-lucide="trending-up"></i>
           </div>
           <h2 class="kpi-title">Tasa Neta de Crecimiento<br><span style="font-size: 0.88em; font-weight: 500; color: #00D2FF;">(TNCC Acumulado)</span></h2>
+          <button type="button" class="kpi-info-btn" onclick="openIndicatorHelp('tncc')" title="Concepto del indicador" aria-label="Ayuda Tasa Neta de Crecimiento">
+            <i data-lucide="info"></i>
+          </button>
         </div>
 
         <div class="kpi-formula-badge">
@@ -146,6 +149,9 @@
             <i data-lucide="scale"></i>
           </div>
           <h2 class="kpi-title">Eficiencia Comercial<br><span style="font-size: 0.88em; font-weight: 500; color: #10b981;">Instalación vs. Retiro</span></h2>
+          <button type="button" class="kpi-info-btn" onclick="openIndicatorHelp('eficiencia')" title="Concepto del indicador" aria-label="Ayuda Eficiencia Comercial">
+            <i data-lucide="info"></i>
+          </button>
         </div>
 
         <div class="kpi-formula-badge">
@@ -183,6 +189,9 @@
             <i data-lucide="users"></i>
           </div>
           <h2 class="kpi-title">Cartera de Suscriptores<br><span style="font-size: 0.88em; font-weight: 500; color: #60a5fa;">Enero vs. Septiembre</span></h2>
+          <button type="button" class="kpi-info-btn" onclick="openIndicatorHelp('cartera')" title="Concepto del indicador" aria-label="Ayuda Cartera de Suscriptores">
+            <i data-lucide="info"></i>
+          </button>
         </div>
 
         <div class="kpi-formula-badge">
@@ -220,6 +229,9 @@
             <i data-lucide="arrow-left-right"></i>
           </div>
           <h2 class="kpi-title">Balance de Flujos Netos<br><span style="font-size: 0.88em; font-weight: 500; color: #c084fc;">9 Meses Consolidados</span></h2>
+          <button type="button" class="kpi-info-btn" onclick="openIndicatorHelp('balance')" title="Concepto del indicador" aria-label="Ayuda Balance de Flujos Netos">
+            <i data-lucide="info"></i>
+          </button>
         </div>
 
         <div class="kpi-formula-badge">
@@ -782,6 +794,60 @@ Ene&#9;175609&#9;3926&#9;694&#9;1.84&#9;1517643&#9;1195&#9;36980&#9;-2.36
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL POP UP DE BIENVENIDA "¿SABÍAS QUÉ?..."
+  ========================================================= -->
+  <div class="custom-modal-overlay" id="welcomeModal" onclick="handleCustomModalOverlayClick(event, 'welcomeModal')">
+    <div class="custom-modal-dialog welcome-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="welcomeModalTitle">
+      <button type="button" class="custom-modal-close" onclick="closeCustomModal('welcomeModal')" aria-label="Cerrar ventana" title="Cerrar (Esc)">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="custom-modal-badge">
+        <i data-lucide="lightbulb" style="width:14px;height:14px;"></i>
+        <span>¿Sabías qué?...</span>
+      </div>
+      <h3 class="custom-modal-title" id="welcomeModalTitle">Tasa Neta de Crecimiento de Cartera</h3>
+      <div class="custom-modal-body">
+        <p>
+          <strong>La Tasa Neta de Crecimiento de Cartera (TNNCC)</strong> Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado.
+        </p>
+        <p>
+          Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.
+        </p>
+      </div>
+      <div class="custom-modal-footer">
+        <button type="button" class="custom-modal-btn primary" onclick="closeCustomModal('welcomeModal')">
+          <span>Entendido</span>
+          <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL DE AYUDA DE INDICADORES (i)
+  ========================================================= -->
+  <div class="custom-modal-overlay" id="indicatorHelpModal" onclick="handleCustomModalOverlayClick(event, 'indicatorHelpModal')">
+    <div class="custom-modal-dialog indicator-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="indicatorHelpTitle">
+      <button type="button" class="custom-modal-close" onclick="closeCustomModal('indicatorHelpModal')" aria-label="Cerrar ventana" title="Cerrar (Esc)">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="custom-modal-badge" id="indicatorHelpBadge">
+        <i data-lucide="info" style="width:14px;height:14px;"></i>
+        <span>Concepto del Indicador</span>
+      </div>
+      <h3 class="custom-modal-title" id="indicatorHelpTitle">Concepto del Indicador</h3>
+      <div class="custom-modal-body" id="indicatorHelpBody">
+        <!-- Texto explicativo dinámico -->
+      </div>
+      <div class="custom-modal-footer">
+        <button type="button" class="custom-modal-btn secondary" onclick="closeCustomModal('indicatorHelpModal')">
+          <span>Cerrar</span>
+        </button>
+      </div>
     </div>
   </div>
 

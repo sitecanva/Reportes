@@ -71,7 +71,103 @@ function initDashboard() {
 
   setupEditorEvents();
   buildTrendChart();
+
+  // Mostrar automáticamente el popup de bienvenida al ingresar
+  setTimeout(() => {
+    openWelcomePopup();
+  }, 350);
 }
+
+/* =========================================================
+   POP UP DE BIENVENIDA Y MODAL DE AYUDA DE INDICADORES (i)
+========================================================= */
+const INDICATOR_HELP_DATA = {
+  tncc: {
+    badge: '¿Sabías qué?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNNCC)',
+    icon: 'trending-up',
+    color: '#00D2FF',
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNNCC) Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+  },
+  eficiencia: {
+    badge: 'Eficiencia Comercial',
+    title: 'Instalación vs. Retiro',
+    icon: 'scale',
+    color: '#10b981',
+    text: 'Indica cuántos clientes nuevos entran a la empresa por cada cliente que decide retirarse. Es un indicador directo de la capacidad de reemplazo del equipo de ventas.'
+  },
+  cartera: {
+    badge: 'Cartera de Suscriptores',
+    title: 'Cartera de Suscriptores',
+    icon: 'users',
+    color: '#3b82f6',
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con el inventario inicial, reflejando el balance global y el ritmo de retención o contracción del parque de abonados.'
+  },
+  balance: {
+    badge: 'Balance de Flujos Netos',
+    title: 'Balance de Flujos Netos',
+    icon: 'arrow-left-right',
+    color: '#c084fc',
+    text: 'Es el resultado neto definitivo en cartera de clientes (+Instalaciones - Retiros); refleja si al final del período la empresa quedó con más o menos hogares conectados tras comparar todas las instalaciones contra todas los retiros'
+  }
+};
+
+function openIndicatorHelp(indicatorKey) {
+  const data = INDICATOR_HELP_DATA[indicatorKey];
+  if (!data) return;
+
+  const titleEl = document.getElementById('indicatorHelpTitle');
+  const bodyEl = document.getElementById('indicatorHelpBody');
+  const badgeEl = document.getElementById('indicatorHelpBadge');
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (bodyEl) bodyEl.innerHTML = `<p>${data.text}</p>`;
+  if (badgeEl) {
+    badgeEl.innerHTML = `<i data-lucide="${data.icon}" style="width:14px;height:14px;color:${data.color}"></i> <span style="color:${data.color}">${data.badge}</span>`;
+  }
+
+  openCustomModal('indicatorHelpModal');
+}
+
+function openWelcomePopup() {
+  openCustomModal('welcomeModal');
+}
+
+function openCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+  });
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function closeCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.remove('active');
+  setTimeout(() => {
+    if (!modal.classList.contains('active')) {
+      modal.style.display = 'none';
+    }
+  }, 250);
+}
+
+function handleCustomModalOverlayClick(e, modalId) {
+  if (e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+    closeCustomModal(modalId);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCustomModal('welcomeModal');
+    closeCustomModal('indicatorHelpModal');
+  }
+});
 
 /**
  * Gráfico Principal: Evolución Mensual de TNCC
@@ -1626,6 +1722,104 @@ function switchView(view) {
 
   if (window.lucide) lucide.createIcons();
   buildTrendChart();
+}
+
+const INDICATOR_HELP_DATA = {
+  tncc: {
+    badge: '¿Sabías qué?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNNCC)',
+    icon: 'trending-up',
+    color: '#00D2FF',
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNNCC) Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+  },
+  eficiencia: {
+    badge: 'Eficiencia Comercial',
+    title: 'Instalación vs. Retiro',
+    icon: 'scale',
+    color: '#10b981',
+    text: 'Indica cuántos clientes nuevos entran a la empresa por cada cliente que decide retirarse. Es un indicador directo de la capacidad de reemplazo del equipo de ventas.'
+  },
+  cartera: {
+    badge: 'Cartera de Suscriptores',
+    title: 'Cartera de Suscriptores',
+    icon: 'users',
+    color: '#3b82f6',
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con el inventario inicial, reflejando el balance global y el ritmo de retención o contracción del parque de abonados.'
+  },
+  balance: {
+    badge: 'Balance de Flujos Netos',
+    title: 'Balance de Flujos Netos',
+    icon: 'arrow-left-right',
+    color: '#c084fc',
+    text: 'Es el resultado neto definitivo en cartera de clientes (+Instalaciones - Retiros); refleja si al final del período la empresa quedó con más o menos hogares conectados tras comparar todas las instalaciones contra todas los retiros'
+  }
+};
+
+function openIndicatorHelp(indicatorKey) {
+  const data = INDICATOR_HELP_DATA[indicatorKey];
+  if (!data) return;
+
+  const titleEl = document.getElementById('indicatorHelpTitle');
+  const bodyEl = document.getElementById('indicatorHelpBody');
+  const badgeEl = document.getElementById('indicatorHelpBadge');
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (bodyEl) bodyEl.innerHTML = '<p>' + data.text + '</p>';
+  if (badgeEl) {
+    badgeEl.innerHTML = '<i data-lucide="' + data.icon + '" style="width:14px;height:14px;color:' + data.color + '"></i> <span style="color:' + data.color + '">' + data.badge + '</span>';
+  }
+
+  openCustomModal('indicatorHelpModal');
+}
+
+function openWelcomePopup() {
+  openCustomModal('welcomeModal');
+}
+
+function openCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+  });
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function closeCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.remove('active');
+  setTimeout(() => {
+    if (!modal.classList.contains('active')) {
+      modal.style.display = 'none';
+    }
+  }, 250);
+}
+
+function handleCustomModalOverlayClick(e, modalId) {
+  if (e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+    closeCustomModal(modalId);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCustomModal('welcomeModal');
+    closeCustomModal('indicatorHelpModal');
+  }
+});
+
+function initStandaloneReport() {
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  buildTrendChart();
+  setTimeout(() => {
+    openWelcomePopup();
+  }, 350);
 }
 
 if (document.readyState === 'loading') {
