@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNCC - Reporte Combinado Cobre | Fibra</title>
+  
+  <!-- CSS Externo Optimizado -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS CDN para lectura de Excel xlsx/xls -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Assets Embebidos para Exportación Autónoma -->
+  <script src="js/embedded-assets.js"></script>
+  <!-- JS Externo Optimizado -->
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+
+  <!-- External Studio Control Panel (Panel Externo de Gestión - Separado del Reporte) -->
+  <aside class="external-studio-panel" id="externalStudioPanel">
+    <div class="studio-brand-group">
+      <div class="studio-icon-badge">
+        <i data-lucide="sliders"></i>
+      </div>
+      <div>
+        <span class="studio-title-main">TNCC Analytics Studio</span>
+        <span class="studio-title-sub">Reporte Combinado Cobre | Fibra</span>
+      </div>
+    </div>
+
+    <!-- Acciones del Panel Externo -->
+    <div class="studio-actions">
+      <button type="button" class="btn-studio-edit" onclick="openMetricsEditor()">
+        <i data-lucide="edit-3"></i> Editar métricas
+      </button>
+      <button type="button" class="btn-studio-download" onclick="downloadStandaloneReport()">
+        <i data-lucide="download"></i> Descargar Reporte HTML (Independiente)
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Container del Reporte -->
+  <main class="dashboard-layout" id="reportMainContainer">
+
+    <!-- Header Section del Reporte -->
+    <section class="info-header">
+      <div class="header-top-row">
+        <div class="main-title-box">
+          <h1 class="main-title" id="dispTituloReporte">TNCC - Reporte Combinado Cobre | Fibra</h1>
+          <div class="product-tags-container">
+            <span class="product-tag ultra" id="tagAbaUltra"><i data-lucide="zap"></i> Aba Ultra</span>
+            <span class="product-tag cobre" id="tagAbaCobre"><i data-lucide="layers"></i> Aba Cobre</span>
+            <span class="product-tag comparativa" id="tagComparativa"><i data-lucide="git-compare"></i> Análisis Cruzado</span>
+          </div>
+        </div>
+        <div class="logo-box">
+          <img src="img/logo-ipulso.png" alt="Logo IPULSO" class="header-logo" id="headerLogoImg" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'header-logo-fallback\'><i data-lucide=\'sparkles\'></i> IPULSO</div>'; if (window.lucide) lucide.createIcons();">
+        </div>
+      </div>
+
+      <!-- Navegación de Vistas Integrada al Reporte -->
+      <div class="report-view-nav-bar">
+        <span class="report-view-nav-label"><i data-lucide="layers" style="width:14px;height:14px;"></i> Modo de Visualización:</span>
+        <nav class="action-nav">
+          <button type="button" class="nav-btn active" id="btnViewCombinado" onclick="switchView('combinado')">
+            <i data-lucide="layers"></i>
+            <span>Vista Combinada</span>
+          </button>
+          <button type="button" class="nav-btn" id="btnViewUltra" onclick="switchView('fibra')">
+            <i data-lucide="zap"></i>
+            <span>Aba Ultra (Fibra)</span>
+          </button>
+          <button type="button" class="nav-btn" id="btnViewCobre" onclick="switchView('cobre')">
+            <i data-lucide="boxes"></i>
+            <span>Aba Cobre</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="context-box" id="dispHeaderContext">
+        Un vistazo profundo al crecimiento, la retención, la migración de red y las oportunidades estratégicas para el período <strong id="dispPeriodo">enero a septiembre de 2026</strong>.
+      </div>
+
+      <!-- Year Filter Section -->
+      <div class="year-filter-section" id="yearFilterSection">
+        <span class="year-filter-label">Año Fiscal:</span>
+        <div style="display: flex; gap: 8px; align-items: center;" id="yearButtonsGroup">
+          <button type="button" class="year-btn active" id="dispAnioBtn">2026</button>
+          <span style="font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; margin-left: 10px;" id="dispCicloContainer">
+            <i data-lucide="calendar" style="width: 14px; height: 14px; margin-right: 4px;"></i> <span id="dispCicloLabel">Ciclo de 9 Meses Consolidados (Ene - Sept)</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI Grid (Row 1) - Comparative Shared Cards -->
+    <section class="kpi-grid">
+      
+      <!-- Card 1: TNCC Global -->
+      <article class="kpi-card cyan-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <h2 class="kpi-title">Tasa Neta de Crecimiento<br><span style="font-size: 0.88em; font-weight: 500; color: #00D2FF;">(TNCC Acumulado)</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>TNCC:</span>
+          <span class="formula-var">(Instalaciones - Retiros)</span>
+          <span class="formula-div">/</span>
+          <span class="formula-var">Cartera Inicio</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispTnccValueUltra">-0.59%</div>
+            <span class="stat-subtext" id="dispTnccSubUltra">Prom: -0.16%/mes</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispTnccValueCobre">-24.05%</div>
+            <span class="stat-subtext" id="dispTnccSubCobre">Prom: -3.16%/mes</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispTnccDesc">
+            Ambas tecnologías clasifican en <span class="highlight-tag" id="dispTnccStatus">Muy lento o estancado</span> (&le; 0.5%). Aba Ultra sufre desaceleración neta y Aba Cobre ejecuta el apagado programado de centrales legadas.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 2: Eficiencia Adquisición vs Retiro -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #10b981;">
+            <i data-lucide="scale"></i>
+          </div>
+          <h2 class="kpi-title">Eficiencia Comercial<br><span style="font-size: 0.88em; font-weight: 500; color: #10b981;">Instalación vs. Retiro</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Ratio:</span>
+          <span class="formula-var">Instalaciones</span>
+          <span class="formula-div">/</span>
+          <span class="formula-var">Retiros</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispEficienciaUltra" style="color: #38bdf8;">0.90</div>
+            <span class="stat-subtext" id="dispEficienciaSubUltra">32.904 / 36.449</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispEficienciaCobre" style="color: #fb923c;">0.02</div>
+            <span class="stat-subtext" id="dispEficienciaSubCobre">7.932 / 394.309</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispEficienciaDesc">
+            Aba Ultra registra <strong>90 instalaciones por cada 100 retiros</strong>, lo que refleja un déficit de reemplazo. En cambio, Aba Cobre solo instala <strong>2 clientes por cada 100 retiros</strong>, evidenciando una desconexión 50 veces superior.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 3: Cartera Base y Desplazamiento -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); color: #3b82f6;">
+            <i data-lucide="users"></i>
+          </div>
+          <h2 class="kpi-title">Cartera de Suscriptores<br><span style="font-size: 0.88em; font-weight: 500; color: #60a5fa;">Enero vs. Septiembre</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Variación:</span>
+          <span class="formula-var">Base Sept</span>
+          <span class="formula-div">-</span>
+          <span class="formula-var">Base Ene</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispCarteraUltra">174.829</div>
+            <span class="stat-subtext" id="dispCarteraSubUltra">Inicio: 175.609 (-780)</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispCarteraCobre">1.152.689</div>
+            <span class="stat-subtext" id="dispCarteraSubCobre">Inicio: 1.517.643 (-365k)</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispCarteraDesc">
+            Cobre reduce su cartera en <strong>-24.05%</strong> (-364.954 cuentas). La fibra óptica no logra absorber ese volumen, cerrando Septiembre por debajo de su punto de partida en enero.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 4: Flujos Físicos de Instalaciones y Retiros -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #a855f7;">
+            <i data-lucide="arrow-left-right"></i>
+          </div>
+          <h2 class="kpi-title">Balance de Flujos Netos<br><span style="font-size: 0.88em; font-weight: 500; color: #c084fc;">9 Meses Consolidados</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Neto:</span>
+          <span class="formula-var">Total Instalaciones</span>
+          <span class="formula-div">-</span>
+          <span class="formula-var">Total Retiros</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispBalanceNetoUltra" style="color: #fb7185;">-3.545</div>
+            <span class="stat-subtext" id="dispBalanceSubUltra">+32.904 inst / -36.449 ret</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispBalanceNetoCobre" style="color: #f43f5e;">-386.377</div>
+            <span class="stat-subtext" id="dispBalanceSubCobre">+7.932 inst / -394.309 ret</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispBalanceDesc">
+            Frente a los <strong>394.309 retiros en cobre</strong>, la fibra sólo sumó 32.904 instalaciones. Más de <strong>361.000 clientes salieron</strong> del ecosistema de la empresa sin migrar.
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Section 2: Monthly Trend Line Chart Section -->
+    <section class="trend-section">
+      <div class="trend-header">
+        <div class="trend-title-group">
+          <i data-lucide="trending-up" class="trend-icon" style="width: 26px; height: 26px;"></i>
+          <div>
+            <h3 id="chartMainTitle">Evolución Mensual de TNCC (Tasa Neta de Crecimiento MES)</h3>
+            <p style="font-size: 0.76rem; color: var(--text-dim); margin-top: 2px;">
+              Curvas sincronizadas de tasa porcentual neta con hitos de Instalaciones, Retiros y umbrales de referencia
+            </p>
+          </div>
+        </div>
+        <div class="trend-badges-group">
+          <span class="trend-badge" style="background: rgba(0, 210, 255, 0.15); border-color: rgba(0, 210, 255, 0.4); color: #00D2FF;">
+            <i data-lucide="zap" style="width:12px;height:12px;"></i> Prom. Ultra: -0.16%
+          </span>
+          <span class="trend-badge" style="background: rgba(255, 140, 66, 0.15); border-color: rgba(255, 140, 66, 0.4); color: #FF8C42;">
+            <i data-lucide="layers" style="width:12px;height:12px;"></i> Prom. Cobre: -3.16%
+          </span>
+          <span class="trend-badge" style="background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.4); color: #FFD700;">
+            <i data-lucide="calendar" style="width:12px;height:12px;"></i> Ene - Sep 2026
+          </span>
+        </div>
+      </div>
+
+      <!-- Controls & Series Toggles (Con Instalaciones de Fibra e Instalaciones de Cobre) -->
+      <div class="trend-controls-bar">
+        <div class="chart-toggles-group">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-weight: 600; margin-right: 4px;">Series Visibles:</span>
+          
+          <button class="chart-toggle-btn btn-tncc-ultra active" id="toggleTnccUltra" onclick="toggleSeries('tnccUltra')">
+            <i data-lucide="check" style="width:12px;height:12px;"></i> TNCC Fibra %
+          </button>
+          
+          <button class="chart-toggle-btn btn-tncc-cobre active" id="toggleTnccCobre" onclick="toggleSeries('tnccCobre')">
+            <i data-lucide="check" style="width:12px;height:12px;"></i> TNCC Cobre %
+          </button>
+          
+          <button class="chart-toggle-btn btn-inst-ultra" id="toggleInstFibra" onclick="toggleSeries('instFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Instalaciones Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-inst-cobre" id="toggleInstCobre" onclick="toggleSeries('instCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Instalaciones Cobre
+          </button>
+
+          <button class="chart-toggle-btn btn-ret-ultra" id="toggleRetFibra" onclick="toggleSeries('retFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Retiros Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-ret-cobre" id="toggleRetCobre" onclick="toggleSeries('retCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Retiros Cobre
+          </button>
+
+          <button class="chart-toggle-btn btn-net-ultra" id="toggleNetFibra" onclick="toggleSeries('netFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Balance Neto Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-cartera-fibra" id="toggleCarteraFibra" onclick="toggleSeries('carteraFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Cartera Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-cartera-cobre" id="toggleCarteraCobre" onclick="toggleSeries('carteraCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Cartera Cobre
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.74rem; color: var(--text-dim);">Línea Benchmark:</span>
+          <select id="selectBenchmark" onchange="changeBenchmark()" style="background: rgba(15, 12, 45, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.74rem; outline: none; cursor: pointer;">
+            <option value="thresholds">Umbrales Normativos (0.5% y 2%)</option>
+            <option value="avgUltra">Promedio Fibra (-0.16%)</option>
+            <option value="avgCobre">Promedio Cobre (-3.16%)</option>
+            <option value="zero">Línea Cero (0.00%)</option>
+            <option value="none">Ocultar Guías</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="chart-canvas-container">
+        <canvas id="trendChartCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- Section 3: Normative Criteria Matrix (Leyenda Normativa Dual) -->
+    <section class="legend-section">
+      <div class="legend-header-main">
+        <div class="legend-title-group">
+          <i data-lucide="scale" class="legend-main-icon" style="width: 24px; height: 24px;"></i>
+          <h3 class="legend-title">Matriz de Criterios (Leyenda Normativa de TNCC)</h3>
+        </div>
+        <span class="legend-header-desc">Clasificación oficial por tecnología: Aba Ultra vs. Aba Cobre</span>
+      </div>
+
+      <div class="legend-dual-container">
+        
+        <!-- Aba Ultra Matrix Block -->
+        <div class="legend-product-block">
+          <div class="legend-table-header">
+            <div class="legend-header-pill ultra">
+              <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+              <span>Aba Ultra (Fibra Óptica)</span>
+            </div>
+            <span class="legend-header-tncc ultra" id="legendBadgeUltra">TNCC Global: -0.59%</span>
+          </div>
+          <table class="legend-table">
+            <tbody>
+              <!-- Active Row: Baja / Muy Lento -->
+              <tr class="legend-row active-row-baja" id="rowBajaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0% a 0.5% (o menor)</div>
+                  <div class="legend-status-label" style="color: #fb7185;">Muy lento o estancado</div>
+                  <span class="legend-badge ultra"><i data-lucide="alert-triangle" style="width:10px;height:10px;display:inline;"></i> Ultra: -0.59%</span>
+                </td>
+                <td class="legend-cell desc">
+                  <strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva. La fibra cerró septiembre (174.829) por debajo de enero (175.609).
+                </td>
+              </tr>
+              <!-- Moderada: Saludable -->
+              <tr class="legend-row" id="rowModeradaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0.6% a 2%</div>
+                  <div class="legend-status-label" style="color: #38bdf8;">Saludable</div>
+                </td>
+                <td class="legend-cell desc">
+                  La empresa está expandiendo su cartera de manera constante. El negocio está en una trayectoria positiva. (Alcanzado en Ene, Feb y Ago).
+                </td>
+              </tr>
+              <!-- Alta: Excelente -->
+              <tr class="legend-row" id="rowAltaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">&gt; 2%</div>
+                  <div class="legend-status-label" style="color: #34d399;">Excelente</div>
+                </td>
+                <td class="legend-cell desc">
+                  Muestra que la empresa está ganando una cuota de mercado significativa muy rápidamente. (Registrado puntualmente en May +2.58% y Jun +2.97%).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Aba Cobre Matrix Block -->
+        <div class="legend-product-block">
+          <div class="legend-table-header">
+            <div class="legend-header-pill cobre">
+              <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+              <span>Aba Cobre (Red Tradicional)</span>
+            </div>
+            <span class="legend-header-tncc cobre" id="legendBadgeCobre">TNCC Acum: -24.05%</span>
+          </div>
+          <table class="legend-table">
+            <tbody>
+              <!-- Active Row: Baja / Extinción -->
+              <tr class="legend-row active-row-baja" id="rowBajaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0% a 0.5% (o menor)</div>
+                  <div class="legend-status-label" style="color: #fb7185;">Muy lento o estancado</div>
+                  <span class="legend-badge cobre"><i data-lucide="arrow-down-circle" style="width:10px;height:10px;display:inline;"></i> Cobre: -24.05%</span>
+                </td>
+                <td class="legend-cell desc">
+                  <strong>Retiro programado de planta.</strong> La contracción acumulada (-365k líneas) responde a la política de desconexión y apagado de centrales legadas, sin inversión de reposición.
+                </td>
+              </tr>
+              <!-- Moderada -->
+              <tr class="legend-row" id="rowModeradaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0.6% a 2%</div>
+                  <div class="legend-status-label" style="color: #38bdf8;">Saludable</div>
+                </td>
+                <td class="legend-cell desc">
+                  No aplica a cobre en el ciclo actual. No se persiguen metas de expansión en tecnología legada.
+                </td>
+              </tr>
+              <!-- Alta -->
+              <tr class="legend-row" id="rowAltaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">&gt; 2%</div>
+                  <div class="legend-status-label" style="color: #34d399;">Excelente</div>
+                </td>
+                <td class="legend-cell desc">
+                  Cero presencia de cobre en este cuadrante. La consigna estratégica es la migración obligada hacia fibra óptica.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+
+
+    <!-- Section 5: Real-time Executive Diagnostic Narrative -->
+    <section class="narrative-box">
+      <div class="narrative-header">
+        <i data-lucide="sparkles"></i>
+        <span>Análisis y Diagnóstico Ejecutivo en Tiempo Real</span>
+      </div>
+
+      <div class="narrative-dual-grid">
+        
+        <!-- Aba Ultra Narrative -->
+        <div class="narrative-col">
+          <div class="narrative-product-tag ultra-tag">
+            <i data-lucide="zap"></i> Resumen Ejecutivo: Aba Ultra (Fibra Óptica)
+          </div>
+          <p class="narrative-content" id="narrativeUltraText">
+            Para el período evaluado (enero a septiembre de 2026), la cartera de <strong>Aba Ultra</strong> registró un total de <strong>32.904 clientes adquiridos (instalaciones)</strong> frente a <strong>36.449 clientes perdidos (retiros)</strong>, arrojando una variación neta de <strong>-3.545 cuentas</strong>. Esto sitúa la Tasa Neta de Crecimiento de Cartera en <strong>-0.59% acumulado</strong> (promedio de -0.16% mensual), clasificando formalmente en la Matriz Normativa en estado <strong>"Muy lento o estancado"</strong>.<br><br>
+            A pesar del buen desempeño semestral impulsado por mayo (+2.58%) y junio (+2.97%) que elevó la cartera al pico de 193.585 clientes, el <strong>shock de 22.371 retiros en julio</strong> quebró el crecimiento (-10.31% TNCC) y los niveles de retiros en agosto (4.079) y septiembre (4.413) impidieron la recuperación, cerrando el noveno mes en 174.829 suscriptores (inferior a los 175.609 de enero). La ratio de reemplazo es de <strong>0.90</strong>, exigiendo blindaje de cartera FTTH y retención proactiva.
+          </p>
+        </div>
+
+        <!-- Aba Cobre Narrative -->
+        <div class="narrative-col">
+          <div class="narrative-product-tag cobre-tag">
+            <i data-lucide="layers"></i> Resumen Ejecutivo: Aba Cobre (Planta Legada)
+          </div>
+          <p class="narrative-content" id="narrativeCobreText">
+            En cuanto a la tecnología <strong>Aba Cobre</strong>, se contabilizaron <strong>7.932 instalaciones</strong> y <strong>394.309 retiros</strong>, totalizando una contracción de cartera de <strong>-24.05%</strong> (-364.954 líneas netas) y un TNCC acumulado de <strong>-25.46%</strong> (promedio mensual de -3.16%), ubicándose con consistencia en el cuadrante <strong>"Muy lento o estancado"</strong>.<br><br>
+            Este comportamiento no es un fracaso comercial fortuito sino el reflejo de la <strong>política corporativa deliberada de vaciado y apagado de centrales de cobre obsoletas</strong>. La empresa mantiene el cese de nuevas inversiones comerciales en cobre (promedio de 881 instalaciones/mes), asumiendo un retiro continuo (43.812 retiros/mes) con un pico en febrero de 95.916 desconexiones. El desafío crítico reside en canalizar este flujo saliente hacia la fibra propia antes de que abandonen la empresa.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 6: Cross Findings & Strategic Technology Interaction -->
+    <section class="cross-findings-section">
+      <div class="cross-header">
+        <div class="cross-title-group">
+          <i data-lucide="network" style="color: #00D2FF; width: 24px; height: 24px;"></i>
+          <h3>Hallazgos Cruzados e Interacción Tecnológica (Cobre vs. Fibra)</h3>
+        </div>
+        <span class="cross-pill">Diagnóstico Estratégico Corporativo</span>
+      </div>
+
+      <div class="cross-cards-grid">
+        
+        <!-- Cruce 1: Retiro de Planta Cobre -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #60a5fa;">
+                <i data-lucide="cpu" style="width:14px;height:14px;"></i> Retiro de Planta Cobre
+              </span>
+              <span class="cross-card-pill" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">-365k Líneas</span>
+            </div>
+            <p class="cross-card-desc">
+              La empresa no busca sostener el cobre: la contracción acumulada del <strong>-24.05%</strong> (de 1.51M a 1.15M abonados) y las reducidas instalaciones (656/mes) responden a la <strong>política deliberada de vaciado y retiro de la planta obsoleta</strong>.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Objetivo corporativo: <strong style="color: #e2e8f0;">Apagado programado de centrales</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 2: Diagnóstico Normativo Fibra -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #fb7185;">
+                <i data-lucide="alert-octagon" style="width:14px;height:14px;"></i> Diagnóstico Matriz: Fibra
+              </span>
+              <span class="cross-card-pill" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">TNCC: -0.59%</span>
+            </div>
+            <p class="cross-card-desc">
+              Bajo la <strong>Leyenda Normativa</strong>, rangos de 0% a 0.5% señalan <em>"Muy lento o estancado (rendimiento débil)"</em>. Al arrojar un TNCC acumulado de <strong>-0.59%</strong> y cerrar Septiembre (174.829) por debajo de Enero (175.609), <strong>el crecimiento de Fibra no es óptimo</strong>.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Dictamen normativo: <strong style="color: #fb7185;">Exige ajustes comerciales inmediatos</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 3: Fuga Fuera de la Empresa -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #f59e0b;">
+                <i data-lucide="shuffle" style="width:14px;height:14px;"></i> Fuga Fuera de la Empresa
+              </span>
+              <span class="cross-card-pill" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">&lt; 8.5% Absorción</span>
+            </div>
+            <p class="cross-card-desc">
+              Frente a los <strong>394.309 retiros en cobre</strong>, la fibra sólo pudo instalar <strong>32.904 clientes</strong>. Más del <strong>91.5% de los abonados retirados</strong> no migraron a la fibra propia, fugándose hacia competidores o cortando el servicio definitivamente.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Fuga neta de mercado: <strong style="color: #fbbf24;">361k usuarios perdidos para la empresa</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 4: Blindaje Requerido en FTTH -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #34d399;">
+                <i data-lucide="shield-alert" style="width:14px;height:14px;"></i> Blindaje de Cartera FTTH
+              </span>
+              <span class="cross-card-pill" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Plan Proactivo</span>
+            </div>
+            <p class="cross-card-desc">
+              La fibra no sólo falla en capturar la migración del cobre, sino que además sufre fuga interna: perdió <strong>36.449 clientes de fibra</strong> (más de los que instaló). Se requiere sincronizar el corte de cobre con la instalación óptica inmediata y blindar la base existente.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Meta estratégica: <strong style="color: #34d399;">Migración sin churn ni desenganche</strong>.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Info -->
+  <footer class="info-footer">
+    <div class="footer-left-content">
+      <div class="footer-brand-line">
+        <span class="footer-brand-tag" id="dispFooterMarca">IPULSO:</span>
+        <span class="footer-sub-title" id="dispFooterSubtitulo">INFOGRAFÍA EJECUTIVA - ABA ULTRA Y ABA COBRE</span>
+      </div>
+      <div class="footer-detail-line" id="dispFooterElaborado">Elaborado por: Mercadeo Hogares - Mercados Masivos (VPSS)</div>
+      <div class="footer-detail-line" id="dispFooterFuente">Colaboración y fuente de datos: Servicios Masivos - Mercados Masivos (VPSS)</div>
+    </div>
+    <div class="footer-right-content">
+      <span style="color: #00D2FF; font-weight: 600;">Fecha de elaboración:</span><br>
+      <span id="dispFooterFecha">7 de noviembre de 2026</span>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       MODAL DE EDICIÓN DE MÉTRICAS Y METADATOS
+  ========================================================= -->
+  <div class="metrics-modal-overlay" id="metricsEditorModal">
+    <div class="metrics-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-icon-badge">
+            <i data-lucide="sliders"></i>
+          </div>
+          <div class="modal-title-text">
+            <h3>Editor de Métricas y Configuración</h3>
+            <p>Carga archivos Excel, TXT, CSV, pega imágenes o edita metadatos en tiempo real</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeMetricsEditor()" title="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs">
+        <button type="button" class="modal-tab-btn active" id="tabBtnData" onclick="switchEditorTab('data')">
+          <i data-lucide="file-spreadsheet" style="width:16px;height:16px;"></i> 1. Cargar Métricas y Archivos
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnTitles" onclick="switchEditorTab('titles')">
+          <i data-lucide="type" style="width:16px;height:16px;"></i> 2. Títulos, Periodo y Año
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnFooter" onclick="switchEditorTab('footer')">
+          <i data-lucide="tag" style="width:16px;height:16px;"></i> 3. Pie de Página y Fuentes
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        
+        <!-- Tab 1: Data & Files -->
+        <div class="modal-tab-pane active" id="paneTab-data">
+          <!-- Dropzone -->
+          <div class="editor-dropzone" id="editorDropzone" onclick="document.getElementById('fileDataInput').click()">
+            <input type="file" id="fileDataInput" style="display:none;" accept=".xlsx, .xls, .csv, .txt, image/png, image/jpeg" onchange="handleFileInputChange(event)">
+            <div class="dropzone-icon">
+              <i data-lucide="upload-cloud" style="width:24px;height:24px;"></i>
+            </div>
+            <div class="dropzone-title">Haz clic para buscar o arrastra y suelta tu archivo aquí</div>
+            <div class="dropzone-sub">También puedes pegar datos en texto o capturas de imagen directamente presionando <strong style="color:#00D2FF;">Ctrl + V</strong></div>
+            <div class="dropzone-formats">
+              <span class="format-chip">Excel (.xlsx / .xls)</span>
+              <span class="format-chip">Texto (.txt / .csv)</span>
+              <span class="format-chip">Imágenes (.png / .jpg)</span>
+              <span class="format-chip">Portapapeles</span>
+            </div>
+          </div>
+
+          <!-- Image Preview Box (cuando se pega o arrastra imagen) -->
+          <div class="editor-image-preview-box" id="editorImagePreviewBox">
+            <img id="editorImagePreviewThumb" class="editor-image-preview-thumb" alt="Vista previa">
+            <div style="flex:1;">
+              <strong style="color:#10b981;font-size:0.84rem;display:block;">Imagen detectada</strong>
+              <span style="font-size:0.75rem;color:var(--text-dim);">Puedes reemplazar el logotipo institucional de iPulso con esta imagen.</span>
+            </div>
+            <button type="button" class="btn btn-cyan" onclick="setUploadedImageAsLogo()">
+              <i data-lucide="image"></i> Usar como Logo iPulso
+            </button>
+          </div>
+
+          <!-- Data Input Text Area -->
+          <div class="editor-form-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <label class="editor-label" for="editorDataText">
+                <i data-lucide="table"></i> Entrada de Datos en Texto Plano (CSV / TSV / Tabular)
+              </label>
+              <div style="display:flex;gap:6px;">
+                <button type="button" class="btn" style="padding:4px 8px;font-size:0.72rem;" onclick="loadCurrentDataToEditor()">
+                  <i data-lucide="refresh-cw"></i> Cargar Datos Actuales
+                </button>
+                <button type="button" class="btn" style="padding:4px 8px;font-size:0.72rem;" onclick="loadSampleCsvData()">
+                  <i data-lucide="sparkles"></i> Plantilla Ejemplo
+                </button>
+              </div>
+            </div>
+            <textarea id="editorDataText" class="editor-textarea editor-textarea-mono" placeholder="Pega aquí filas copiadas de Excel o CSV...
+Mes&#9;CarteraInicio_Fibra&#9;Instalaciones_Fibra&#9;Retiros_Fibra&#9;TNCC_Fibra&#9;CarteraInicio_Cobre&#9;Instalaciones_Cobre&#9;Retiros_Cobre&#9;TNCC_Cobre
+Ene&#9;175609&#9;3926&#9;694&#9;1.84&#9;1517643&#9;1195&#9;36980&#9;-2.36
+..."></textarea>
+          </div>
+
+          <!-- Status indicator -->
+          <div class="editor-status-bar" id="editorStatusBar">
+            <i data-lucide="info" style="width:16px;height:16px;"></i>
+            <span id="editorStatusText">Listo. Puedes cargar un archivo o editar la tabla de datos directamente.</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Titles, Period & Year -->
+        <div class="modal-tab-pane" id="paneTab-titles">
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditTitulo">
+              <i data-lucide="heading"></i> Título Principal del Reporte
+            </label>
+            <input type="text" id="inputEditTitulo" class="editor-input" value="TNCC - Reporte Combinado Cobre | Fibra">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditContexto">
+              <i data-lucide="file-text"></i> Descripción Ejecutiva / Contexto de Cabecera
+            </label>
+            <textarea id="inputEditContexto" class="editor-textarea">Un vistazo profundo al crecimiento, la retención, la migración de red y las oportunidades estratégicas para el período enero a septiembre de 2026.</textarea>
+          </div>
+
+          <div class="editor-form-grid">
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditPeriodo">
+                <i data-lucide="calendar"></i> Periodo Evaluado
+              </label>
+              <input type="text" id="inputEditPeriodo" class="editor-input" value="enero a septiembre de 2026">
+            </div>
+
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditAnio">
+                <i data-lucide="calendar-days"></i> Texto del Año Fiscal
+              </label>
+              <input type="text" id="inputEditAnio" class="editor-input" value="2026">
+            </div>
+          </div>
+
+          <div class="editor-form-grid">
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditCiclo">
+                <i data-lucide="clock"></i> Etiqueta de Ciclo y Meses
+              </label>
+              <input type="text" id="inputEditCiclo" class="editor-input" value="Ciclo de 9 Meses Consolidados (Ene - Sept)">
+            </div>
+
+            <div class="editor-form-group" style="justify-content:center;">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:#fff;font-size:0.82rem;font-weight:600;margin-top:14px;">
+                <input type="checkbox" id="checkMostrarAnio" checked style="width:18px;height:18px;accent-color:#00D2FF;cursor:pointer;">
+                <span>Mostrar sección de Año Fiscal en el reporte</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Footer & Sources -->
+        <div class="modal-tab-pane" id="paneTab-footer">
+          <div class="editor-form-grid">
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditMarca">
+                <i data-lucide="bookmark"></i> Marca / Tag Pie de Página
+              </label>
+              <input type="text" id="inputEditMarca" class="editor-input" value="IPULSO:">
+            </div>
+
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditSubtitulo">
+                <i data-lucide="type"></i> Subtítulo Pie de Página
+              </label>
+              <input type="text" id="inputEditSubtitulo" class="editor-input" value="INFOGRAFÍA EJECUTIVA - ABA ULTRA Y ABA COBRE">
+            </div>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditElaborado">
+              <i data-lucide="user-check"></i> Elaborado por
+            </label>
+            <input type="text" id="inputEditElaborado" class="editor-input" value="Elaborado por: Mercadeo Hogares - Mercados Masivos (VPSS)">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditFuente">
+              <i data-lucide="database"></i> Colaboración y Fuente de Datos
+            </label>
+            <input type="text" id="inputEditFuente" class="editor-input" value="Colaboración y fuente de datos: Servicios Masivos - Mercados Masivos (VPSS)">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditFecha">
+              <i data-lucide="calendar"></i> Fecha de Elaboración
+            </label>
+            <input type="text" id="inputEditFecha" class="editor-input" value="7 de noviembre de 2026">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn" onclick="closeMetricsEditor()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-cyan" style="font-weight:700;" onclick="applyMetricsEditorChanges()">
+          <i data-lucide="check-circle"></i> Aplicar y Actualizar Reporte
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,3076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNCC - Reporte Combinado Cobre | Fibra</title>
+  
+  <!-- CSS Externo Optimizado -->
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-primary: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secondary: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Cyberpunk Palette matching reference report */
+  --bg-gradient-start: #E10098;
+  --bg-gradient-mid1: #A00078;
+  --bg-gradient-mid2: #160058;
+  --bg-gradient-end: #0B0528;
+
+  --card-bg-dark: rgba(15, 12, 45, 0.85);
+  --card-bg-glass: rgba(18, 14, 55, 0.65);
+  --card-border-glow: rgba(225, 0, 152, 0.35);
+  --card-cyan-border: rgba(0, 210, 255, 0.38);
+  --card-cobre-border: rgba(255, 140, 66, 0.38);
+
+  --text-white: #FFFFFF;
+  --text-pink-bright: #FF2AAB;
+  --text-cyan-bright: #00D2FF;
+  --text-copper: #FF8C42;
+  --text-muted: #B8C4E6;
+  --text-dim: #8899B8;
+
+  --accent-green: #00FFB7;
+  --accent-emerald: #10B981;
+  --accent-red: #FF2A4B;
+  --accent-rose: #F43F5E;
+  --accent-gold: #FFD700;
+  --accent-amber: #F59E0B;
+
+  --glow-pink: 0 0 25px rgba(255, 42, 171, 0.45);
+  --glow-cyan: 0 0 25px rgba(0, 210, 255, 0.45);
+  --glow-copper: 0 0 25px rgba(255, 140, 66, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+}
+
+body {
+  font-family: var(--font-primary);
+  background: radial-gradient(circle at 12% 18%, #ff0099 0%, transparent 45%),
+              radial-gradient(circle at 88% 82%, #00d2ff 0%, transparent 40%),
+              radial-gradient(circle at 50% 50%, #790060 0%, transparent 55%),
+              linear-gradient(135deg, #cc0088 0%, #800066 22%, #14004e 60%, #080320 100%);
+  background-attachment: fixed;
+  color: var(--text-white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(8, 3, 32, 0.95);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff0099, #00d2ff);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff2aab, #5ce1e6);
+}
+
+/* External Studio Panel - Separado del reporte */
+.external-studio-panel {
+  background: rgba(8, 3, 32, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 2px solid rgba(0, 210, 255, 0.35);
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.65);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.studio-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.studio-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(255, 42, 171, 0.25));
+  border: 1px solid #00D2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00D2FF;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.studio-title-main {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.studio-title-sub {
+  font-size: 0.74rem;
+  color: #00D2FF;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.studio-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-studio-edit {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.18), rgba(0, 255, 183, 0.18));
+  border: 1px solid #00D2FF;
+  color: #00D2FF;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.btn-studio-edit:hover {
+  background: rgba(0, 210, 255, 0.32);
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-studio-download {
+  background: linear-gradient(135deg, rgba(255, 42, 171, 0.25), rgba(168, 85, 247, 0.25));
+  border: 1px solid #FF2AAB;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.btn-studio-download:hover {
+  background: rgba(255, 42, 171, 0.42);
+  box-shadow: 0 0 16px rgba(255, 42, 171, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Navegación integrada en el reporte */
+.report-view-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.report-view-nav-label {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #FF2AAB, #00D2FF);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: var(--glow-cyan);
+  flex-shrink: 0;
+}
+
+.action-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, rgba(255, 42, 171, 0.28), rgba(0, 210, 255, 0.28));
+  color: #fff;
+  border: 1px solid rgba(0, 210, 255, 0.45);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+}
+
+.top-actions-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-cyan {
+  background: rgba(0, 210, 255, 0.15);
+  border-color: rgba(0, 210, 255, 0.4);
+  color: #00D2FF;
+}
+
+.btn-cyan:hover {
+  background: rgba(0, 210, 255, 0.28);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Main Container Layout */
+.dashboard-layout {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 24px 20px 60px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Header Section */
+.info-header {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-glow);
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.main-title-box {
+  flex: 1;
+  min-width: 280px;
+}
+
+.main-title {
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #FFFFFF 20%, #FF2AAB 65%, #00D2FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.25;
+}
+
+.product-tags-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.product-tag {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-tag.ultra {
+  background: rgba(0, 210, 255, 0.16);
+  border: 1px solid rgba(0, 210, 255, 0.45);
+  color: #00D2FF;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
+}
+
+.product-tag.cobre {
+  background: rgba(255, 140, 66, 0.16);
+  border: 1px solid rgba(255, 140, 66, 0.45);
+  color: #FF8C42;
+  box-shadow: 0 0 12px rgba(255, 140, 66, 0.2);
+}
+
+.product-tag.comparativa {
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #c084fc;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Logo IPULSO SIN sombra blanca ni resplandor - Tamaño Ampliado */
+.header-logo {
+  height: 68px;
+  width: auto;
+  max-width: 280px;
+  object-fit: contain;
+  filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.header-logo-fallback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.context-box {
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  font-family: var(--font-secondary);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.context-box strong {
+  color: #00D2FF;
+  font-weight: 600;
+}
+
+.year-filter-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.year-filter-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.year-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.year-btn.active {
+  background: #00D2FF;
+  color: #0B0528;
+  border-color: #00D2FF;
+  box-shadow: var(--glow-cyan);
+}
+
+/* KPI Grid - Row 1 Dual Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+.kpi-card {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-glow);
+  border-radius: 20px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 210, 255, 0.5);
+}
+
+.kpi-card.cyan-card {
+  border-color: var(--card-cyan-border);
+}
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.kpi-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 42, 171, 0.15);
+  border: 1px solid rgba(255, 42, 171, 0.35);
+  color: #FF2AAB;
+  flex-shrink: 0;
+}
+
+.kpi-card.cyan-card .kpi-icon-box {
+  background: rgba(0, 210, 255, 0.15);
+  border-color: rgba(0, 210, 255, 0.35);
+  color: #00D2FF;
+}
+
+.kpi-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+.kpi-formula-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  margin-bottom: 10px;
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.formula-var {
+  color: #5ce1e6;
+  font-weight: 600;
+}
+
+.formula-div {
+  color: #FF2AAB;
+  font-weight: 700;
+}
+
+/* Dual Values Row inside Cards - Optimizado contra desbordes */
+.kpi-dual-values {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(8, 3, 32, 0.65);
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 8px 0;
+  min-width: 0;
+}
+
+.kpi-val-group {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.kpi-val-group.text-right {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.kpi-product-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.kpi-product-badge.ultra-badge {
+  color: #00D2FF;
+}
+
+.kpi-product-badge.cobre-badge {
+  color: #FF8C42;
+}
+
+.kpi-dual-divider {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  flex-shrink: 0;
+}
+
+/* Control estricto de desborde numérico */
+.big-stat-number {
+  font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+  font-weight: 800;
+  font-family: var(--font-mono);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.big-stat-number.stat-ultra {
+  color: #00D2FF;
+  text-shadow: 0 0 15px rgba(0, 210, 255, 0.35);
+}
+
+.big-stat-number.stat-cobre {
+  color: #FF8C42;
+  text-shadow: 0 0 15px rgba(255, 140, 66, 0.35);
+}
+
+/* Texto de subdetalle ajustado para envolver en móviles sin romperse */
+.stat-subtext {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-secondary);
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.kpi-dual-desc {
+  margin-top: 8px;
+}
+
+.kpi-description {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  font-family: var(--font-secondary);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.highlight-tag {
+  background: rgba(244, 63, 94, 0.2);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #fb7185;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.74rem;
+  display: inline-block;
+}
+
+.highlight-tag.good {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+/* Trend Section (Main Chart) */
+.trend-section {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-glow);
+  border-radius: 20px;
+  padding: 22px 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trend-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trend-icon {
+  color: #FF2AAB;
+  flex-shrink: 0;
+}
+
+.trend-title-group h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.trend-badges-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trend-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.trend-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(8, 3, 32, 0.55);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chart-toggles-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chart-toggle-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.chart-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.chart-toggle-btn.active {
+  border-color: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.chart-toggle-btn.btn-tncc-ultra.active {
+  background: rgba(0, 210, 255, 0.2);
+  color: #00D2FF;
+  border-color: #00D2FF;
+}
+
+.chart-toggle-btn.btn-tncc-cobre.active {
+  background: rgba(255, 140, 66, 0.2);
+  color: #FF8C42;
+  border-color: #FF8C42;
+}
+
+.chart-toggle-btn.btn-inst-ultra.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10B981;
+  border-color: #10B981;
+}
+
+.chart-toggle-btn.btn-inst-cobre.active {
+  background: rgba(20, 184, 166, 0.2);
+  color: #2dd4bf;
+  border-color: #14b8a6;
+}
+
+.chart-toggle-btn.btn-ret-ultra.active {
+  background: rgba(244, 63, 94, 0.2);
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+
+.chart-toggle-btn.btn-ret-cobre.active {
+  background: rgba(225, 29, 72, 0.2);
+  color: #fb7185;
+  border-color: #e11d48;
+}
+
+.chart-toggle-btn.btn-net-ultra.active {
+  background: rgba(56, 189, 248, 0.22);
+  color: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.chart-toggle-btn.btn-cartera-fibra.active {
+  background: rgba(192, 132, 252, 0.22);
+  color: #c084fc;
+  border-color: #c084fc;
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.4);
+}
+
+.chart-toggle-btn.btn-cartera-cobre.active {
+  background: rgba(251, 191, 36, 0.22);
+  color: #fbbf24;
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin-top: 6px;
+}
+
+/* Normative Legend Matrix Section */
+.legend-section {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-glow);
+  border-radius: 20px;
+  padding: 22px 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.legend-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
+.legend-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend-main-icon {
+  color: #FF2AAB;
+  flex-shrink: 0;
+}
+
+.legend-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.legend-header-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.legend-dual-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.legend-product-block {
+  background: rgba(8, 3, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legend-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.legend-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-header-pill.ultra {
+  color: #00D2FF;
+}
+
+.legend-header-pill.cobre {
+  color: #FF8C42;
+}
+
+.legend-header-tncc {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.legend-header-tncc.ultra {
+  background: rgba(0, 210, 255, 0.15);
+  color: #00D2FF;
+  border: 1px solid rgba(0, 210, 255, 0.35);
+}
+
+.legend-header-tncc.cobre {
+  background: rgba(255, 140, 66, 0.15);
+  color: #FF8C42;
+  border: 1px solid rgba(255, 140, 66, 0.35);
+}
+
+.legend-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.legend-row {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.legend-row.active-row-baja {
+  background: rgba(244, 63, 94, 0.12);
+  border-left: 4px solid #f43f5e;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.15);
+}
+
+.legend-row.active-row-moderada {
+  background: rgba(0, 210, 255, 0.12);
+  border-left: 4px solid #00D2FF;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
+}
+
+.legend-row.active-row-alta {
+  background: rgba(16, 185, 129, 0.12);
+  border-left: 4px solid #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+
+.legend-cell {
+  padding: 10px 12px;
+  vertical-align: middle;
+  font-size: 0.78rem;
+}
+
+.legend-cell.range-status-col {
+  width: 38%;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.legend-cell.desc {
+  width: 62%;
+  color: var(--text-muted);
+  font-family: var(--font-secondary);
+  line-height: 1.4;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.legend-range-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.legend-status-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+.legend-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.legend-badge.ultra {
+  background: rgba(0, 210, 255, 0.25);
+  color: #00D2FF;
+  border: 1px solid #00D2FF;
+}
+
+.legend-badge.cobre {
+  background: rgba(255, 140, 66, 0.25);
+  color: #FF8C42;
+  border: 1px solid #FF8C42;
+}
+
+/* Narrative Diagnostic Box */
+.narrative-box {
+  background: var(--card-bg-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-glow);
+  border-radius: 20px;
+  padding: 22px 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.narrative-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.narrative-header svg {
+  color: #FF2AAB;
+  flex-shrink: 0;
+}
+
+.narrative-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.narrative-col {
+  background: rgba(8, 3, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.narrative-product-tag {
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.narrative-product-tag.ultra-tag {
+  color: #00D2FF;
+}
+
+.narrative-product-tag.cobre-tag {
+  color: #FF8C42;
+}
+
+.narrative-content {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-family: var(--font-secondary);
+}
+
+.narrative-content strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Cross Findings */
+.cross-findings-section {
+  background: linear-gradient(135deg, rgba(15, 12, 45, 0.95), rgba(26, 8, 56, 0.9));
+  border: 1px solid rgba(0, 210, 255, 0.35);
+  border-radius: 20px;
+  padding: 22px 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cross-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cross-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cross-title-group h3 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.cross-pill {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(0, 210, 255, 0.15);
+  border: 1px solid rgba(0, 210, 255, 0.4);
+  color: #00D2FF;
+}
+
+.cross-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.cross-card {
+  background: rgba(8, 3, 32, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+}
+
+.cross-card:hover {
+  border-color: rgba(0, 210, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.cross-card-top {
+  margin-bottom: 10px;
+}
+
+.cross-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cross-card-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cross-card-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cross-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-family: var(--font-secondary);
+}
+
+.cross-card-desc strong {
+  color: #fff;
+}
+
+.cross-card-footer {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* Footer Info */
+.info-footer {
+  background: rgba(8, 3, 32, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.footer-brand-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.footer-brand-tag {
+  color: #00D2FF;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.footer-sub-title {
+  color: #fff;
+  font-weight: 600;
+}
+
+.footer-detail-line {
+  line-height: 1.45;
+}
+
+.footer-right-content {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   RESPONSIVE OPTIMIZATIONS (TABLETS & MOBILE SMARTPHONES)
+========================================================= */
+
+/* Tablets (landscape and portrait up to 1024px) */
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    padding: 18px 16px 45px 16px;
+    gap: 18px;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .legend-dual-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .narrative-dual-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .cross-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chart-canvas-container {
+    height: 360px;
+  }
+}
+
+/* Mobile Smartphones (up to 768px) */
+@media (max-width: 768px) {
+  .top-app-bar {
+    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .brand-title {
+    font-size: 1.05rem;
+  }
+  /* Modo de Visualización adaptativo en móviles: los 3 botones encajan en pantalla sin desborde */
+  .report-view-nav-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    width: 100%;
+  }
+
+  .report-view-nav-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .action-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: 5px;
+    padding: 4px;
+    background: rgba(12, 6, 32, 0.75);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: visible;
+    box-sizing: border-box;
+  }
+
+  .nav-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 3px;
+    font-size: clamp(0.66rem, 2.3vw, 0.76rem);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 4px;
+    white-space: normal;
+    line-height: 1.15;
+    border-radius: 8px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+
+  .nav-btn i {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .nav-btn span {
+    display: block;
+    max-width: 100%;
+  }
+  .top-actions-group {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .btn {
+    padding: 6px 10px;
+    font-size: 0.76rem;
+  }
+  
+  .dashboard-layout {
+    padding: 14px 10px 40px 10px;
+    gap: 14px;
+  }
+
+  .info-header {
+    padding: 16px 16px;
+  }
+  .header-top-row {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .logo-box {
+    align-self: flex-start;
+  }
+  .header-logo {
+    height: 52px;
+  }
+  .main-title {
+    font-size: 1.35rem;
+  }
+  .context-box {
+    font-size: 0.8rem;
+  }
+
+  /* Single Column KPI Grid on Mobile */
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .kpi-card {
+    padding: 16px 16px;
+  }
+  .big-stat-number {
+    font-size: 1.35rem;
+  }
+  .stat-subtext {
+    font-size: 0.68rem;
+  }
+
+  /* Trend Chart Controls Bar Responsive */
+  .trend-section {
+    padding: 16px 14px;
+  }
+  .trend-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .trend-title-group h3 {
+    font-size: 1.05rem;
+  }
+  .trend-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 8px 10px;
+  }
+  .chart-toggles-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .chart-toggle-btn {
+    padding: 4px 8px;
+    font-size: 0.68rem;
+  }
+  .chart-canvas-container {
+    height: 310px;
+  }
+
+  /* Legend & Narrative on Mobile */
+  .legend-section {
+    padding: 16px 14px;
+  }
+  .legend-cell {
+    padding: 8px 10px;
+    font-size: 0.74rem;
+  }
+  .legend-cell.range-status-col {
+    width: 44%;
+  }
+  .legend-cell.desc {
+    width: 56%;
+  }
+
+  .narrative-box {
+    padding: 16px 14px;
+  }
+  .narrative-col {
+    padding: 14px 14px;
+  }
+
+  /* Cross Cards Grid 1 Column on Mobile */
+  .cross-findings-section {
+    padding: 16px 14px;
+  }
+  .cross-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Footer Stacked on Mobile */
+  .info-footer {
+    padding: 16px 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .footer-right-content {
+    text-align: left;
+    white-space: normal;
+  }
+}
+
+/* Small Handset Phones (< 400px) */
+@media (max-width: 400px) {
+  .main-title {
+    font-size: 1.2rem;
+  }
+  .big-stat-number {
+    font-size: 1.22rem;
+  }
+  .kpi-dual-values {
+    padding: 10px 10px;
+    gap: 6px;
+  }
+  .chart-canvas-container {
+    height: 270px;
+  }
+  .nav-btn {
+    font-size: 0.65rem;
+    padding: 6px 2px;
+    gap: 2px;
+  }
+  .nav-btn i {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* =========================================================
+   MODAL EDITOR DE MÉTRICAS Y METADATOS
+========================================================= */
+.metrics-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 2, 16, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.metrics-modal-overlay.open {
+  display: flex;
+}
+
+.metrics-modal-container {
+  background: #0d0726;
+  border: 1px solid rgba(0, 210, 255, 0.45);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 210, 255, 0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 860px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleIn 0.22s ease-out;
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 18px 24px;
+  background: rgba(18, 10, 52, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 210, 255, 0.2);
+  border: 1px solid #00D2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00D2FF;
+}
+
+.modal-title-text h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.modal-title-text p {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(244, 63, 94, 0.25);
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+
+.modal-tabs {
+  display: flex;
+  background: rgba(10, 5, 30, 0.98);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0 16px;
+  overflow-x: auto;
+  gap: 6px;
+}
+
+.modal-tab-btn {
+  padding: 12px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.modal-tab-btn:hover {
+  color: #fff;
+}
+
+.modal-tab-btn.active {
+  color: #00D2FF;
+  border-bottom-color: #00D2FF;
+}
+
+.modal-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-tab-pane.active {
+  display: flex;
+}
+
+/* Dropzone */
+.editor-dropzone {
+  border: 2px dashed rgba(0, 210, 255, 0.45);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  background: rgba(0, 210, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.editor-dropzone:hover, .editor-dropzone.dragover {
+  border-color: #00FFB7;
+  background: rgba(0, 255, 183, 0.08);
+  transform: translateY(-1px);
+}
+
+.dropzone-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 210, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00D2FF;
+}
+
+.dropzone-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dropzone-sub {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+.dropzone-formats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.format-chip {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: #cbd5e1;
+}
+
+/* Image preview box in modal */
+.editor-image-preview-box {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 12px;
+}
+
+.editor-image-preview-thumb {
+  height: 48px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 6px;
+}
+
+/* Form Groups */
+.editor-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.editor-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-input, .editor-textarea {
+  background: rgba(12, 6, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9px;
+  color: #fff;
+  padding: 9px 12px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.editor-input:focus, .editor-textarea:focus {
+  border-color: #00D2FF;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.25);
+}
+
+.editor-textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.45;
+}
+
+.editor-textarea-mono {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  min-height: 160px;
+  line-height: 1.45;
+  white-space: pre;
+}
+
+.editor-status-bar {
+  padding: 10px 14px;
+  background: rgba(0, 210, 255, 0.1);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 9px;
+  font-size: 0.76rem;
+  color: #00D2FF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-footer {
+  padding: 14px 24px;
+  background: rgba(18, 10, 52, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+</style>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS CDN para lectura de Excel xlsx/xls -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Assets Embebidos para Exportación Autónoma -->
+  <!-- JS Externo Optimizado -->
+  </head>
+<body>
+
+  <!-- External Studio Control Panel (Panel Externo de Gestión - Separado del Reporte) -->
+  <!-- Main Container del Reporte -->
+  <main class="dashboard-layout" id="reportMainContainer">
+
+    <!-- Header Section del Reporte -->
+    <section class="info-header">
+      <div class="header-top-row">
+        <div class="main-title-box">
+          <h1 class="main-title" id="dispTituloReporte">TNCC - Reporte Combinado Cobre | Fibra</h1>
+          <div class="product-tags-container">
+            <span class="product-tag ultra" id="tagAbaUltra"><i data-lucide="zap"></i> Aba Ultra</span>
+            <span class="product-tag cobre" id="tagAbaCobre"><i data-lucide="layers"></i> Aba Cobre</span>
+            <span class="product-tag comparativa" id="tagComparativa"><i data-lucide="git-compare"></i> Análisis Cruzado</span>
+          </div>
+        </div>
+        <div class="logo-box">
+          <img src="data:image/png;base64,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" alt="Logo IPULSO" class="header-logo" id="headerLogoImg" >
+        </div>
+      </div>
+
+      <!-- Navegación de Vistas Integrada al Reporte -->
+      <div class="report-view-nav-bar">
+        <span class="report-view-nav-label"><i data-lucide="layers" style="width:14px;height:14px;"></i> Modo de Visualización:</span>
+        <nav class="action-nav">
+          <button type="button" class="nav-btn active" id="btnViewCombinado" onclick="switchView('combinado')">
+            <i data-lucide="layers"></i>
+            <span>Vista Combinada</span>
+          </button>
+          <button type="button" class="nav-btn" id="btnViewUltra" onclick="switchView('fibra')">
+            <i data-lucide="zap"></i>
+            <span>Aba Ultra (Fibra)</span>
+          </button>
+          <button type="button" class="nav-btn" id="btnViewCobre" onclick="switchView('cobre')">
+            <i data-lucide="boxes"></i>
+            <span>Aba Cobre</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="context-box" id="dispHeaderContext">
+        Un vistazo profundo al crecimiento, la retención, la migración de red y las oportunidades estratégicas para el período <strong id="dispPeriodo">enero a septiembre de 2026</strong>.
+      </div>
+
+      <!-- Year Filter Section -->
+      <div class="year-filter-section" id="yearFilterSection">
+        <span class="year-filter-label">Año Fiscal:</span>
+        <div style="display: flex; gap: 8px; align-items: center;" id="yearButtonsGroup">
+          <button type="button" class="year-btn active" id="dispAnioBtn">2026</button>
+          <span style="font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; margin-left: 10px;" id="dispCicloContainer">
+            <i data-lucide="calendar" style="width: 14px; height: 14px; margin-right: 4px;"></i> <span id="dispCicloLabel">Ciclo de 9 Meses Consolidados (Ene - Sept)</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI Grid (Row 1) - Comparative Shared Cards -->
+    <section class="kpi-grid">
+      
+      <!-- Card 1: TNCC Global -->
+      <article class="kpi-card cyan-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <h2 class="kpi-title">Tasa Neta de Crecimiento<br><span style="font-size: 0.88em; font-weight: 500; color: #00D2FF;">(TNCC Acumulado)</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>TNCC:</span>
+          <span class="formula-var">(Instalaciones - Retiros)</span>
+          <span class="formula-div">/</span>
+          <span class="formula-var">Cartera Inicio</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispTnccValueUltra">-0.59%</div>
+            <span class="stat-subtext" id="dispTnccSubUltra">Prom: -0.16%/mes</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispTnccValueCobre">-24.05%</div>
+            <span class="stat-subtext" id="dispTnccSubCobre">Prom: -3.16%/mes</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispTnccDesc">
+            Ambas tecnologías clasifican en <span class="highlight-tag" id="dispTnccStatus">Muy lento o estancado</span> (&le; 0.5%). Aba Ultra sufre desaceleración neta y Aba Cobre ejecuta el apagado programado de centrales legadas.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 2: Eficiencia Adquisición vs Retiro -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #10b981;">
+            <i data-lucide="scale"></i>
+          </div>
+          <h2 class="kpi-title">Eficiencia Comercial<br><span style="font-size: 0.88em; font-weight: 500; color: #10b981;">Instalación vs. Retiro</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Ratio:</span>
+          <span class="formula-var">Instalaciones</span>
+          <span class="formula-div">/</span>
+          <span class="formula-var">Retiros</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispEficienciaUltra" style="color: #38bdf8;">0.90</div>
+            <span class="stat-subtext" id="dispEficienciaSubUltra">32.904 / 36.449</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispEficienciaCobre" style="color: #fb923c;">0.02</div>
+            <span class="stat-subtext" id="dispEficienciaSubCobre">7.932 / 394.309</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispEficienciaDesc">
+            Aba Ultra registra <strong>90 instalaciones por cada 100 retiros</strong>, lo que refleja un déficit de reemplazo. En cambio, Aba Cobre solo instala <strong>2 clientes por cada 100 retiros</strong>, evidenciando una desconexión 50 veces superior.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 3: Cartera Base y Desplazamiento -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); color: #3b82f6;">
+            <i data-lucide="users"></i>
+          </div>
+          <h2 class="kpi-title">Cartera de Suscriptores<br><span style="font-size: 0.88em; font-weight: 500; color: #60a5fa;">Enero vs. Septiembre</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Variación:</span>
+          <span class="formula-var">Base Sept</span>
+          <span class="formula-div">-</span>
+          <span class="formula-var">Base Ene</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispCarteraUltra">174.829</div>
+            <span class="stat-subtext" id="dispCarteraSubUltra">Inicio: 175.609 (-780)</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispCarteraCobre">1.152.689</div>
+            <span class="stat-subtext" id="dispCarteraSubCobre">Inicio: 1.517.643 (-365k)</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispCarteraDesc">
+            Cobre reduce su cartera en <strong>-24.05%</strong> (-364.954 cuentas). La fibra óptica no logra absorber ese volumen, cerrando Septiembre por debajo de su punto de partida en enero.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 4: Flujos Físicos de Instalaciones y Retiros -->
+      <article class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #a855f7;">
+            <i data-lucide="arrow-left-right"></i>
+          </div>
+          <h2 class="kpi-title">Balance de Flujos Netos<br><span style="font-size: 0.88em; font-weight: 500; color: #c084fc;">9 Meses Consolidados</span></h2>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Neto:</span>
+          <span class="formula-var">Total Instalaciones</span>
+          <span class="formula-div">-</span>
+          <span class="formula-var">Total Retiros</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge"><i data-lucide="zap" style="width:12px;height:12px;"></i> Aba Ultra</span>
+            <div class="big-stat-number stat-ultra" id="dispBalanceNetoUltra" style="color: #fb7185;">-3.545</div>
+            <span class="stat-subtext" id="dispBalanceSubUltra">+32.904 inst / -36.449 ret</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge cobre-badge"><i data-lucide="layers" style="width:12px;height:12px;"></i> Aba Cobre</span>
+            <div class="big-stat-number stat-cobre" id="dispBalanceNetoCobre" style="color: #f43f5e;">-386.377</div>
+            <span class="stat-subtext" id="dispBalanceSubCobre">+7.932 inst / -394.309 ret</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispBalanceDesc">
+            Frente a los <strong>394.309 retiros en cobre</strong>, la fibra sólo sumó 32.904 instalaciones. Más de <strong>361.000 clientes salieron</strong> del ecosistema de la empresa sin migrar.
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Section 2: Monthly Trend Line Chart Section -->
+    <section class="trend-section">
+      <div class="trend-header">
+        <div class="trend-title-group">
+          <i data-lucide="trending-up" class="trend-icon" style="width: 26px; height: 26px;"></i>
+          <div>
+            <h3 id="chartMainTitle">Evolución Mensual de TNCC (Tasa Neta de Crecimiento MES)</h3>
+            <p style="font-size: 0.76rem; color: var(--text-dim); margin-top: 2px;">
+              Curvas sincronizadas de tasa porcentual neta con hitos de Instalaciones, Retiros y umbrales de referencia
+            </p>
+          </div>
+        </div>
+        <div class="trend-badges-group">
+          <span class="trend-badge" style="background: rgba(0, 210, 255, 0.15); border-color: rgba(0, 210, 255, 0.4); color: #00D2FF;">
+            <i data-lucide="zap" style="width:12px;height:12px;"></i> Prom. Ultra: -0.16%
+          </span>
+          <span class="trend-badge" style="background: rgba(255, 140, 66, 0.15); border-color: rgba(255, 140, 66, 0.4); color: #FF8C42;">
+            <i data-lucide="layers" style="width:12px;height:12px;"></i> Prom. Cobre: -3.16%
+          </span>
+          <span class="trend-badge" style="background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.4); color: #FFD700;">
+            <i data-lucide="calendar" style="width:12px;height:12px;"></i> Ene - Sep 2026
+          </span>
+        </div>
+      </div>
+
+      <!-- Controls & Series Toggles (Con Instalaciones de Fibra e Instalaciones de Cobre) -->
+      <div class="trend-controls-bar">
+        <div class="chart-toggles-group">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-weight: 600; margin-right: 4px;">Series Visibles:</span>
+          
+          <button class="chart-toggle-btn btn-tncc-ultra active" id="toggleTnccUltra" onclick="toggleSeries('tnccUltra')">
+            <i data-lucide="check" style="width:12px;height:12px;"></i> TNCC Fibra %
+          </button>
+          
+          <button class="chart-toggle-btn btn-tncc-cobre active" id="toggleTnccCobre" onclick="toggleSeries('tnccCobre')">
+            <i data-lucide="check" style="width:12px;height:12px;"></i> TNCC Cobre %
+          </button>
+          
+          <button class="chart-toggle-btn btn-inst-ultra" id="toggleInstFibra" onclick="toggleSeries('instFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Instalaciones Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-inst-cobre" id="toggleInstCobre" onclick="toggleSeries('instCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Instalaciones Cobre
+          </button>
+
+          <button class="chart-toggle-btn btn-ret-ultra" id="toggleRetFibra" onclick="toggleSeries('retFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Retiros Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-ret-cobre" id="toggleRetCobre" onclick="toggleSeries('retCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Retiros Cobre
+          </button>
+
+          <button class="chart-toggle-btn btn-net-ultra" id="toggleNetFibra" onclick="toggleSeries('netFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Balance Neto Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-cartera-fibra" id="toggleCarteraFibra" onclick="toggleSeries('carteraFibra')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Cartera Fibra
+          </button>
+
+          <button class="chart-toggle-btn btn-cartera-cobre" id="toggleCarteraCobre" onclick="toggleSeries('carteraCobre')">
+            <i data-lucide="eye" style="width:12px;height:12px;"></i> Cartera Cobre
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.74rem; color: var(--text-dim);">Línea Benchmark:</span>
+          <select id="selectBenchmark" onchange="changeBenchmark()" style="background: rgba(15, 12, 45, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.74rem; outline: none; cursor: pointer;">
+            <option value="thresholds">Umbrales Normativos (0.5% y 2%)</option>
+            <option value="avgUltra">Promedio Fibra (-0.16%)</option>
+            <option value="avgCobre">Promedio Cobre (-3.16%)</option>
+            <option value="zero">Línea Cero (0.00%)</option>
+            <option value="none">Ocultar Guías</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="chart-canvas-container">
+        <canvas id="trendChartCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- Section 3: Normative Criteria Matrix (Leyenda Normativa Dual) -->
+    <section class="legend-section">
+      <div class="legend-header-main">
+        <div class="legend-title-group">
+          <i data-lucide="scale" class="legend-main-icon" style="width: 24px; height: 24px;"></i>
+          <h3 class="legend-title">Matriz de Criterios (Leyenda Normativa de TNCC)</h3>
+        </div>
+        <span class="legend-header-desc">Clasificación oficial por tecnología: Aba Ultra vs. Aba Cobre</span>
+      </div>
+
+      <div class="legend-dual-container">
+        
+        <!-- Aba Ultra Matrix Block -->
+        <div class="legend-product-block">
+          <div class="legend-table-header">
+            <div class="legend-header-pill ultra">
+              <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+              <span>Aba Ultra (Fibra Óptica)</span>
+            </div>
+            <span class="legend-header-tncc ultra" id="legendBadgeUltra">TNCC Global: -0.59%</span>
+          </div>
+          <table class="legend-table">
+            <tbody>
+              <!-- Active Row: Baja / Muy Lento -->
+              <tr class="legend-row active-row-baja" id="rowBajaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0% a 0.5% (o menor)</div>
+                  <div class="legend-status-label" style="color: #fb7185;">Muy lento o estancado</div>
+                  <span class="legend-badge ultra"><i data-lucide="alert-triangle" style="width:10px;height:10px;display:inline;"></i> Ultra: -0.59%</span>
+                </td>
+                <td class="legend-cell desc">
+                  <strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva. La fibra cerró septiembre (174.829) por debajo de enero (175.609).
+                </td>
+              </tr>
+              <!-- Moderada: Saludable -->
+              <tr class="legend-row" id="rowModeradaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0.6% a 2%</div>
+                  <div class="legend-status-label" style="color: #38bdf8;">Saludable</div>
+                </td>
+                <td class="legend-cell desc">
+                  La empresa está expandiendo su cartera de manera constante. El negocio está en una trayectoria positiva. (Alcanzado en Ene, Feb y Ago).
+                </td>
+              </tr>
+              <!-- Alta: Excelente -->
+              <tr class="legend-row" id="rowAltaUltra">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">&gt; 2%</div>
+                  <div class="legend-status-label" style="color: #34d399;">Excelente</div>
+                </td>
+                <td class="legend-cell desc">
+                  Muestra que la empresa está ganando una cuota de mercado significativa muy rápidamente. (Registrado puntualmente en May +2.58% y Jun +2.97%).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Aba Cobre Matrix Block -->
+        <div class="legend-product-block">
+          <div class="legend-table-header">
+            <div class="legend-header-pill cobre">
+              <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+              <span>Aba Cobre (Red Tradicional)</span>
+            </div>
+            <span class="legend-header-tncc cobre" id="legendBadgeCobre">TNCC Acum: -24.05%</span>
+          </div>
+          <table class="legend-table">
+            <tbody>
+              <!-- Active Row: Baja / Extinción -->
+              <tr class="legend-row active-row-baja" id="rowBajaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0% a 0.5% (o menor)</div>
+                  <div class="legend-status-label" style="color: #fb7185;">Muy lento o estancado</div>
+                  <span class="legend-badge cobre"><i data-lucide="arrow-down-circle" style="width:10px;height:10px;display:inline;"></i> Cobre: -24.05%</span>
+                </td>
+                <td class="legend-cell desc">
+                  <strong>Retiro programado de planta.</strong> La contracción acumulada (-365k líneas) responde a la política de desconexión y apagado de centrales legadas, sin inversión de reposición.
+                </td>
+              </tr>
+              <!-- Moderada -->
+              <tr class="legend-row" id="rowModeradaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">0.6% a 2%</div>
+                  <div class="legend-status-label" style="color: #38bdf8;">Saludable</div>
+                </td>
+                <td class="legend-cell desc">
+                  No aplica a cobre en el ciclo actual. No se persiguen metas de expansión en tecnología legada.
+                </td>
+              </tr>
+              <!-- Alta -->
+              <tr class="legend-row" id="rowAltaCobre">
+                <td class="legend-cell range-status-col">
+                  <div class="legend-range-label">&gt; 2%</div>
+                  <div class="legend-status-label" style="color: #34d399;">Excelente</div>
+                </td>
+                <td class="legend-cell desc">
+                  Cero presencia de cobre en este cuadrante. La consigna estratégica es la migración obligada hacia fibra óptica.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+
+
+    <!-- Section 5: Real-time Executive Diagnostic Narrative -->
+    <section class="narrative-box">
+      <div class="narrative-header">
+        <i data-lucide="sparkles"></i>
+        <span>Análisis y Diagnóstico Ejecutivo en Tiempo Real</span>
+      </div>
+
+      <div class="narrative-dual-grid">
+        
+        <!-- Aba Ultra Narrative -->
+        <div class="narrative-col">
+          <div class="narrative-product-tag ultra-tag">
+            <i data-lucide="zap"></i> Resumen Ejecutivo: Aba Ultra (Fibra Óptica)
+          </div>
+          <p class="narrative-content" id="narrativeUltraText">
+            Para el período evaluado (enero a septiembre de 2026), la cartera de <strong>Aba Ultra</strong> registró un total de <strong>32.904 clientes adquiridos (instalaciones)</strong> frente a <strong>36.449 clientes perdidos (retiros)</strong>, arrojando una variación neta de <strong>-3.545 cuentas</strong>. Esto sitúa la Tasa Neta de Crecimiento de Cartera en <strong>-0.59% acumulado</strong> (promedio de -0.16% mensual), clasificando formalmente en la Matriz Normativa en estado <strong>"Muy lento o estancado"</strong>.<br><br>
+            A pesar del buen desempeño semestral impulsado por mayo (+2.58%) y junio (+2.97%) que elevó la cartera al pico de 193.585 clientes, el <strong>shock de 22.371 retiros en julio</strong> quebró el crecimiento (-10.31% TNCC) y los niveles de retiros en agosto (4.079) y septiembre (4.413) impidieron la recuperación, cerrando el noveno mes en 174.829 suscriptores (inferior a los 175.609 de enero). La ratio de reemplazo es de <strong>0.90</strong>, exigiendo blindaje de cartera FTTH y retención proactiva.
+          </p>
+        </div>
+
+        <!-- Aba Cobre Narrative -->
+        <div class="narrative-col">
+          <div class="narrative-product-tag cobre-tag">
+            <i data-lucide="layers"></i> Resumen Ejecutivo: Aba Cobre (Planta Legada)
+          </div>
+          <p class="narrative-content" id="narrativeCobreText">
+            En cuanto a la tecnología <strong>Aba Cobre</strong>, se contabilizaron <strong>7.932 instalaciones</strong> y <strong>394.309 retiros</strong>, totalizando una contracción de cartera de <strong>-24.05%</strong> (-364.954 líneas netas) y un TNCC acumulado de <strong>-25.46%</strong> (promedio mensual de -3.16%), ubicándose con consistencia en el cuadrante <strong>"Muy lento o estancado"</strong>.<br><br>
+            Este comportamiento no es un fracaso comercial fortuito sino el reflejo de la <strong>política corporativa deliberada de vaciado y apagado de centrales de cobre obsoletas</strong>. La empresa mantiene el cese de nuevas inversiones comerciales en cobre (promedio de 881 instalaciones/mes), asumiendo un retiro continuo (43.812 retiros/mes) con un pico en febrero de 95.916 desconexiones. El desafío crítico reside en canalizar este flujo saliente hacia la fibra propia antes de que abandonen la empresa.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 6: Cross Findings & Strategic Technology Interaction -->
+    <section class="cross-findings-section">
+      <div class="cross-header">
+        <div class="cross-title-group">
+          <i data-lucide="network" style="color: #00D2FF; width: 24px; height: 24px;"></i>
+          <h3>Hallazgos Cruzados e Interacción Tecnológica (Cobre vs. Fibra)</h3>
+        </div>
+        <span class="cross-pill">Diagnóstico Estratégico Corporativo</span>
+      </div>
+
+      <div class="cross-cards-grid">
+        
+        <!-- Cruce 1: Retiro de Planta Cobre -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #60a5fa;">
+                <i data-lucide="cpu" style="width:14px;height:14px;"></i> Retiro de Planta Cobre
+              </span>
+              <span class="cross-card-pill" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">-365k Líneas</span>
+            </div>
+            <p class="cross-card-desc">
+              La empresa no busca sostener el cobre: la contracción acumulada del <strong>-24.05%</strong> (de 1.51M a 1.15M abonados) y las reducidas instalaciones (656/mes) responden a la <strong>política deliberada de vaciado y retiro de la planta obsoleta</strong>.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Objetivo corporativo: <strong style="color: #e2e8f0;">Apagado programado de centrales</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 2: Diagnóstico Normativo Fibra -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #fb7185;">
+                <i data-lucide="alert-octagon" style="width:14px;height:14px;"></i> Diagnóstico Matriz: Fibra
+              </span>
+              <span class="cross-card-pill" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">TNCC: -0.59%</span>
+            </div>
+            <p class="cross-card-desc">
+              Bajo la <strong>Leyenda Normativa</strong>, rangos de 0% a 0.5% señalan <em>"Muy lento o estancado (rendimiento débil)"</em>. Al arrojar un TNCC acumulado de <strong>-0.59%</strong> y cerrar Septiembre (174.829) por debajo de Enero (175.609), <strong>el crecimiento de Fibra no es óptimo</strong>.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Dictamen normativo: <strong style="color: #fb7185;">Exige ajustes comerciales inmediatos</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 3: Fuga Fuera de la Empresa -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #f59e0b;">
+                <i data-lucide="shuffle" style="width:14px;height:14px;"></i> Fuga Fuera de la Empresa
+              </span>
+              <span class="cross-card-pill" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">&lt; 8.5% Absorción</span>
+            </div>
+            <p class="cross-card-desc">
+              Frente a los <strong>394.309 retiros en cobre</strong>, la fibra sólo pudo instalar <strong>32.904 clientes</strong>. Más del <strong>91.5% de los abonados retirados</strong> no migraron a la fibra propia, fugándose hacia competidores o cortando el servicio definitivamente.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Fuga neta de mercado: <strong style="color: #fbbf24;">361k usuarios perdidos para la empresa</strong>.
+          </div>
+        </div>
+
+        <!-- Cruce 4: Blindaje Requerido en FTTH -->
+        <div class="cross-card">
+          <div class="cross-card-top">
+            <div class="cross-card-heading">
+              <span class="cross-card-title" style="color: #34d399;">
+                <i data-lucide="shield-alert" style="width:14px;height:14px;"></i> Blindaje de Cartera FTTH
+              </span>
+              <span class="cross-card-pill" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Plan Proactivo</span>
+            </div>
+            <p class="cross-card-desc">
+              La fibra no sólo falla en capturar la migración del cobre, sino que además sufre fuga interna: perdió <strong>36.449 clientes de fibra</strong> (más de los que instaló). Se requiere sincronizar el corte de cobre con la instalación óptica inmediata y blindar la base existente.
+            </p>
+          </div>
+          <div class="cross-card-footer">
+            Meta estratégica: <strong style="color: #34d399;">Migración sin churn ni desenganche</strong>.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Info -->
+  <footer class="info-footer">
+    <div class="footer-left-content">
+      <div class="footer-brand-line">
+        <span class="footer-brand-tag" id="dispFooterMarca">IPULSO:</span>
+        <span class="footer-sub-title" id="dispFooterSubtitulo">INFOGRAFÍA EJECUTIVA - ABA ULTRA Y ABA COBRE</span>
+      </div>
+      <div class="footer-detail-line" id="dispFooterElaborado">Elaborado por: Mercadeo Hogares - Mercados Masivos (VPSS)</div>
+      <div class="footer-detail-line" id="dispFooterFuente">Colaboración y fuente de datos: Servicios Masivos - Mercados Masivos (VPSS)</div>
+    </div>
+    <div class="footer-right-content">
+      <span style="color: #00D2FF; font-weight: 600;">Fecha de elaboración:</span><br>
+      <span id="dispFooterFecha">7 de noviembre de 2026</span>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       MODAL DE EDICIÓN DE MÉTRICAS Y METADATOS
+  ========================================================= -->
+  <!-- Tab 3: Footer & Sources -->
+        <div class="modal-tab-pane" id="paneTab-footer">
+          <div class="editor-form-grid">
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditMarca">
+                <i data-lucide="bookmark"></i> Marca / Tag Pie de Página
+              </label>
+              <input type="text" id="inputEditMarca" class="editor-input" value="IPULSO:">
+            </div>
+
+            <div class="editor-form-group">
+              <label class="editor-label" for="inputEditSubtitulo">
+                <i data-lucide="type"></i> Subtítulo Pie de Página
+              </label>
+              <input type="text" id="inputEditSubtitulo" class="editor-input" value="INFOGRAFÍA EJECUTIVA - ABA ULTRA Y ABA COBRE">
+            </div>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditElaborado">
+              <i data-lucide="user-check"></i> Elaborado por
+            </label>
+            <input type="text" id="inputEditElaborado" class="editor-input" value="Elaborado por: Mercadeo Hogares - Mercados Masivos (VPSS)">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditFuente">
+              <i data-lucide="database"></i> Colaboración y Fuente de Datos
+            </label>
+            <input type="text" id="inputEditFuente" class="editor-input" value="Colaboración y fuente de datos: Servicios Masivos - Mercados Masivos (VPSS)">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label" for="inputEditFecha">
+              <i data-lucide="calendar"></i> Fecha de Elaboración
+            </label>
+            <input type="text" id="inputEditFecha" class="editor-input" value="7 de noviembre de 2026">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn" onclick="closeMetricsEditor()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-cyan" style="font-weight:700;" onclick="applyMetricsEditorChanges()">
+          <i data-lucide="check-circle"></i> Aplicar y Actualizar Reporte
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+
+// Standalone Telecom Data & State
+const telecomData = {
+  "cobre": {
+    "name": "Aba Cobre",
+    "type": "cobre",
+    "color": "#FF8C42",
+    "colorAlpha": "rgba(255, 140, 66, 0.85)",
+    "months": [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sept"
+    ],
+    "carteraInicio": [
+      1517643,
+      1481858,
+      1387054,
+      1342155,
+      1303926,
+      1263474,
+      1213285,
+      1173060,
+      1152689
+    ],
+    "instalaciones": [
+      1195,
+      1112,
+      1114,
+      910,
+      869,
+      803,
+      623,
+      650,
+      656
+    ],
+    "retiros": [
+      36980,
+      95916,
+      46013,
+      39139,
+      41321,
+      50992,
+      40848,
+      21021,
+      22080
+    ],
+    "tncc": [
+      -2.36,
+      -6.4,
+      -3.24,
+      -2.85,
+      -3.1,
+      -3.97,
+      -3.32,
+      -1.74,
+      -1.86
+    ]
+  },
+  "fibra": {
+    "name": "Aba Ultra (Fibra)",
+    "type": "fibra",
+    "color": "#00D2FF",
+    "colorAlpha": "rgba(0, 210, 255, 0.85)",
+    "months": [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sept"
+    ],
+    "carteraInicio": [
+      175609,
+      178841,
+      182313,
+      182795,
+      183262,
+      187994,
+      193585,
+      173620,
+      174829
+    ],
+    "instalaciones": [
+      3926,
+      4333,
+      3028,
+      884,
+      5346,
+      6056,
+      2406,
+      5288,
+      4157
+    ],
+    "retiros": [
+      694,
+      861,
+      2546,
+      417,
+      614,
+      465,
+      22371,
+      4079,
+      4413
+    ],
+    "tncc": [
+      1.84,
+      1.94,
+      0.26,
+      0.26,
+      2.58,
+      2.97,
+      -10.31,
+      0.7,
+      -0.15
+    ]
+  }
+};
+let currentView = "combinado";
+let currentBenchmark = "thresholds";
+let trendChartInstance = null;
+const visibleSeries = {
+  "tnccUltra": true,
+  "tnccCobre": true,
+  "instFibra": false,
+  "instCobre": false,
+  "retFibra": false,
+  "retCobre": false,
+  "netFibra": false,
+  "carteraFibra": false,
+  "carteraCobre": false
+};
+
+const formatNum = n => new Intl.NumberFormat('de-DE').format(Math.round(n));
+const formatPct = n => (n >= 0 ? '+' : '') + n.toFixed(2).replace('.', ',') + '%';
+const sumArr = arr => arr.reduce((a, b) => a + b, 0);
+const avgArr = arr => arr.reduce((a, b) => a + b, 0) / (arr.length || 1);
+
+function initStandaloneReport() {
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  buildTrendChart();
+}
+
+function buildTrendChart() {
+  const canvasEl = document.getElementById('trendChartCanvas');
+  if (!canvasEl) return;
+  const ctx = canvasEl.getContext('2d');
+  if (trendChartInstance) trendChartInstance.destroy();
+
+  const f = telecomData.fibra;
+  const c = telecomData.cobre;
+  const months = f.months;
+
+  const datasets = [];
+
+  // 1. TNCC Fibra (%)
+  if (visibleSeries.tnccUltra) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Ultra (%)',
+      data: f.tncc,
+      borderColor: '#00D2FF',
+      backgroundColor: 'rgba(0, 210, 255, 0.12)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#00D2FF',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 1
+    });
+  }
+
+  // 2. TNCC Cobre (%)
+  if (visibleSeries.tnccCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Cobre (%)',
+      data: c.tncc,
+      borderColor: '#FF8C42',
+      backgroundColor: 'rgba(255, 140, 66, 0.08)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#FF8C42',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 2
+    });
+  }
+
+  // 3. Balance Neto Fibra
+  if (visibleSeries.netFibra) {
+    const netF = f.instalaciones.map((inst, i) => inst - (f.retiros[i] || 0));
+    datasets.push({
+      type: 'line',
+      label: 'Balance Neto Fibra',
+      data: netF,
+      borderColor: '#38BDF8',
+      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+      borderWidth: 2.5,
+      tension: 0.2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#38BDF8',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      yAxisID: 'yFlujos',
+      order: 3
+    });
+  }
+
+  // 4. Cartera Fibra
+  if (visibleSeries.carteraFibra) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Fibra (Líneas)',
+      data: f.carteraInicio,
+      borderColor: '#C084FC',
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#C084FC',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraFibra',
+      order: 4
+    });
+  }
+
+  // 5. Cartera Cobre
+  if (visibleSeries.carteraCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Cobre (Líneas)',
+      data: c.carteraInicio,
+      borderColor: '#FBBF24',
+      borderWidth: 2.5,
+      borderDash: [6, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#FBBF24',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraCobre',
+      order: 5
+    });
+  }
+
+  // 6. Instalaciones Fibra
+  if (visibleSeries.instFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Fibra',
+      data: f.instalaciones,
+      backgroundColor: 'rgba(16, 185, 129, 0.75)',
+      borderColor: '#10B981',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 6
+    });
+  }
+
+  // 7. Instalaciones Cobre
+  if (visibleSeries.instCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Cobre',
+      data: c.instalaciones,
+      backgroundColor: 'rgba(20, 184, 166, 0.7)',
+      borderColor: '#14b8a6',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 7
+    });
+  }
+
+  // 8. Retiros Fibra
+  if (visibleSeries.retFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Fibra',
+      data: f.retiros,
+      backgroundColor: 'rgba(244, 63, 94, 0.7)',
+      borderColor: '#f43f5e',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 8
+    });
+  }
+
+  // 9. Retiros Cobre
+  if (visibleSeries.retCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Cobre',
+      data: c.retiros,
+      backgroundColor: 'rgba(225, 29, 72, 0.65)',
+      borderColor: '#e11d48',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 9
+    });
+  }
+
+  // Guías y Líneas de Benchmark
+  if (currentBenchmark === 'thresholds') {
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Excelente (+2.0%)',
+      data: Array(months.length).fill(2.0),
+      borderColor: 'rgba(16, 185, 129, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Saludable (+0.5%)',
+      data: Array(months.length).fill(0.5),
+      borderColor: 'rgba(0, 210, 255, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.4)',
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgUltra') {
+    const avgF = Number(avgArr(f.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: 'Promedio TNCC Fibra (' + formatPct(avgF) + ')',
+      data: Array(months.length).fill(avgF),
+      borderColor: '#00D2FF',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgCobre') {
+    const avgC = Number(avgArr(c.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: 'Promedio TNCC Cobre (' + formatPct(avgC) + ')',
+      data: Array(months.length).fill(avgC),
+      borderColor: '#FF8C42',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'zero') {
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.5)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    data: {
+      labels: months,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10, 6, 32, 0.95)',
+          borderColor: 'rgba(0, 210, 255, 0.4)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#e2e8f0',
+          padding: 12,
+          titleFont: { size: 13, weight: 'bold', family: 'Outfit' },
+          bodyFont: { size: 12, family: 'JetBrains Mono' },
+          boxPadding: 4,
+          callbacks: {
+            label: function(context) {
+              let l = context.dataset.label || '';
+              if (l) l += ': ';
+              if (context.dataset.yAxisID === 'yTncc') {
+                l += context.parsed.y.toFixed(2) + '%';
+              } else {
+                l += formatNum(context.parsed.y);
+              }
+              return l;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255, 255, 255, 0.08)' },
+          ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+        },
+        yTncc: {
+          type: 'linear',
+          position: 'right',
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre,
+          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          ticks: {
+            color: '#00D2FF',
+            font: { family: 'JetBrains Mono', size: 11 },
+            callback: v => v.toFixed(1) + '%'
+          },
+          title: {
+            display: true,
+            text: 'TNCC Porcentual (%)',
+            color: '#00D2FF',
+            font: { family: 'Outfit', size: 11, weight: 'bold' }
+          }
+        },
+        yFlujos: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.instFibra || visibleSeries.instCobre || visibleSeries.retFibra || visibleSeries.retCobre || visibleSeries.netFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#cbd5e1',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v >= 1000 || v <= -1000) ? (v/1000).toFixed(0) + 'k' : v
+          },
+          title: {
+            display: true,
+            text: 'Flujos (Instalaciones / Retiros / Balance)',
+            color: '#cbd5e1',
+            font: { family: 'Outfit', size: 11 }
+          }
+        },
+        yCarteraFibra: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#C084FC',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000).toFixed(0) + 'k'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Fibra',
+            color: '#C084FC',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        },
+        yCarteraCobre: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraCobre,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#FBBF24',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000000).toFixed(2) + 'M'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Cobre',
+            color: '#FBBF24',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        }
+      }
+    }
+  });
+}
+
+function toggleSeries(seriesKey) {
+  visibleSeries[seriesKey] = !visibleSeries[seriesKey];
+  const btnMap = {
+    tnccUltra: 'toggleTnccUltra',
+    tnccCobre: 'toggleTnccCobre',
+    instFibra: 'toggleInstFibra',
+    instCobre: 'toggleInstCobre',
+    retFibra: 'toggleRetFibra',
+    retCobre: 'toggleRetCobre',
+    netFibra: 'toggleNetFibra',
+    carteraFibra: 'toggleCarteraFibra',
+    carteraCobre: 'toggleCarteraCobre'
+  };
+  const btn = document.getElementById(btnMap[seriesKey]);
+  if (btn) {
+    if (visibleSeries[seriesKey]) {
+      btn.classList.add('active');
+      btn.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = '<i data-lucide="eye" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+  buildTrendChart();
+}
+
+function changeBenchmark() {
+  currentBenchmark = document.getElementById('selectBenchmark').value;
+  buildTrendChart();
+}
+
+function switchView(view) {
+  currentView = view;
+  ['btnViewCombinado', 'btnViewUltra', 'btnViewCobre'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+
+  if (view === 'combinado') {
+    document.getElementById('btnViewCombinado').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'fibra') {
+    document.getElementById('btnViewUltra').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = false;
+    visibleSeries.instFibra = true;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = true;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = true;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'cobre') {
+    document.getElementById('btnViewCobre').classList.add('active');
+    visibleSeries.tnccUltra = false;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = true;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = true;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = true;
+  }
+
+  const syncBtn = (id, key, label) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('active', visibleSeries[key]);
+    const icon = visibleSeries[key] ? 'check' : 'eye';
+    el.innerHTML = '<i data-lucide="' + icon + '" style="width:12px;height:12px;"></i> ' + label;
+  };
+
+  syncBtn('toggleTnccUltra', 'tnccUltra', 'TNCC Fibra %');
+  syncBtn('toggleTnccCobre', 'tnccCobre', 'TNCC Cobre %');
+  syncBtn('toggleInstFibra', 'instFibra', 'Instalaciones Fibra');
+  syncBtn('toggleInstCobre', 'instCobre', 'Instalaciones Cobre');
+  syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
+  syncBtn('toggleRetCobre', 'retCobre', 'Retiros Cobre');
+  syncBtn('toggleNetFibra', 'netFibra', 'Balance Neto Fibra');
+  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Fibra');
+  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cobre');
+
+  if (window.lucide) lucide.createIcons();
+  buildTrendChart();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initStandaloneReport);
+} else {
+  initStandaloneReport();
+}
+
+</script>
+</body>
+</html>
