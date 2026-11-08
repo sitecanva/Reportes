@@ -83,11 +83,11 @@ function initDashboard() {
 ========================================================= */
 const INDICATOR_HELP_DATA = {
   tncc: {
-    badge: '¿Sabías qué?...',
-    title: 'Tasa Neta de Crecimiento de Cartera (TNNCC)',
+    badge: '¿SABÍAS QUÉ?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNCC)',
     icon: 'trending-up',
     color: '#00D2FF',
-    text: 'La Tasa Neta de Crecimiento de Cartera (TNNCC) Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNCC): Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
   },
   eficiencia: {
     badge: 'Eficiencia Comercial',
@@ -1720,11 +1720,11 @@ function switchView(view) {
 
 const INDICATOR_HELP_DATA = {
   tncc: {
-    badge: '¿Sabías qué?...',
-    title: 'Tasa Neta de Crecimiento de Cartera (TNNCC)',
+    badge: '¿SABÍAS QUÉ?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNCC)',
     icon: 'trending-up',
     color: '#00D2FF',
-    text: 'La Tasa Neta de Crecimiento de Cartera (TNNCC) Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNCC): Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
   },
   eficiencia: {
     badge: 'Eficiencia Comercial',
