@@ -137,9 +137,7 @@ function openCustomModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
   modal.style.display = 'flex';
-  requestAnimationFrame(() => {
-    modal.classList.add('active');
-  });
+  modal.classList.add('active');
   if (window.lucide) {
     lucide.createIcons();
   }
@@ -149,21 +147,17 @@ function closeCustomModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
   modal.classList.remove('active');
-  setTimeout(() => {
-    if (!modal.classList.contains('active')) {
-      modal.style.display = 'none';
-    }
-  }, 250);
+  modal.style.display = 'none';
 }
 
 function handleCustomModalOverlayClick(e, modalId) {
-  if (e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+  if (e.target === e.currentTarget || e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
     closeCustomModal(modalId);
   }
 }
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
+  if (e.key === 'Escape' || e.key === 'Esc') {
     closeCustomModal('welcomeModal');
     closeCustomModal('indicatorHelpModal');
   }
@@ -1780,9 +1774,7 @@ function openCustomModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
   modal.style.display = 'flex';
-  requestAnimationFrame(() => {
-    modal.classList.add('active');
-  });
+  modal.classList.add('active');
   if (window.lucide) {
     lucide.createIcons();
   }
@@ -1792,21 +1784,17 @@ function closeCustomModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
   modal.classList.remove('active');
-  setTimeout(() => {
-    if (!modal.classList.contains('active')) {
-      modal.style.display = 'none';
-    }
-  }, 250);
+  modal.style.display = 'none';
 }
 
 function handleCustomModalOverlayClick(e, modalId) {
-  if (e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+  if (e.target === e.currentTarget || e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
     closeCustomModal(modalId);
   }
 }
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
+  if (e.key === 'Escape' || e.key === 'Esc') {
     closeCustomModal('welcomeModal');
     closeCustomModal('indicatorHelpModal');
   }
@@ -1858,5 +1846,9 @@ if (document.readyState === 'loading') {
   }
 }
 
-// Inicializar al cargar el documento
-window.addEventListener('DOMContentLoaded', initDashboard);
+// Inicializar al cargar el documento (soporte inmediato y diferido)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  initDashboard();
+}

@@ -1886,8 +1886,8 @@ body {
 }
 
 .custom-modal-overlay.active {
-  display: flex;
-  opacity: 1;
+  display: flex !important;
+  opacity: 1 !important;
 }
 
 .custom-modal-dialog {
