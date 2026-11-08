@@ -1,3 +1,48 @@
+
+/* =========================================================
+   CONTROL DE TEMA: MODO CLARO Y MODO OSCURO (NEÓN)
+   ========================================================= */
+function initTheme() {
+  let savedTheme = 'dark';
+  try {
+    savedTheme = localStorage.getItem('tncc_theme') || 'dark';
+  } catch (e) {}
+  applyTheme(savedTheme, false);
+}
+
+function toggleTheme() {
+  const isLight = document.documentElement.classList.contains('light-mode');
+  const nextTheme = isLight ? 'dark' : 'light';
+  applyTheme(nextTheme, true);
+}
+
+function applyTheme(theme, rebuildChart = true) {
+  const isLight = theme === 'light';
+  if (isLight) {
+    document.documentElement.classList.add('light-mode');
+  } else {
+    document.documentElement.classList.remove('light-mode');
+  }
+  try {
+    localStorage.setItem('tncc_theme', theme);
+  } catch (e) {}
+
+  const labelEl = document.getElementById('themeToggleLabel');
+  if (labelEl) {
+    labelEl.textContent = isLight ? 'Modo Oscuro' : 'Modo Claro';
+  }
+
+  const btnEl = document.getElementById('themeToggleBtn');
+  if (btnEl) {
+    btnEl.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+    btnEl.title = isLight ? 'Cambiar a Modo Neón Oscuro' : 'Cambiar a Modo Claro';
+  }
+
+  if (rebuildChart && typeof buildTrendChart === 'function') {
+    buildTrendChart();
+  }
+}
+
 /**
  * Dashboard Combinado Cobre & Fibra - TNCC Analytics Studio
  * Mercados Masivos / Monitoreo TNCC
@@ -69,6 +114,7 @@ function initDashboard() {
     })
     .catch(() => {});
 
+  initTheme();
   setupEditorEvents();
   buildTrendChart();
 
@@ -172,6 +218,8 @@ function buildTrendChart() {
   if (!canvasEl) return;
   const ctx = canvasEl.getContext('2d');
   if (trendChartInstance) trendChartInstance.destroy();
+
+  const isLight = document.documentElement.classList.contains('light-mode');
 
   const f = telecomData.fibra;
   const c = telecomData.cobre;
@@ -431,11 +479,11 @@ function buildTrendChart() {
           display: false
         },
         tooltip: {
-          backgroundColor: 'rgba(10, 6, 32, 0.95)',
-          borderColor: 'rgba(0, 210, 255, 0.4)',
+          backgroundColor: isLight ? 'rgba(15, 23, 42, 0.95)' : 'rgba(10, 6, 32, 0.95)',
+          borderColor: isLight ? 'rgba(2, 132, 199, 0.5)' : 'rgba(0, 210, 255, 0.4)',
           borderWidth: 1,
           titleColor: '#fff',
-          bodyColor: '#e2e8f0',
+          bodyColor: isLight ? '#f1f5f9' : '#e2e8f0',
           padding: 12,
           titleFont: { size: 13, weight: 'bold', family: 'Outfit' },
           bodyFont: { size: 12, family: 'JetBrains Mono' },
@@ -456,23 +504,23 @@ function buildTrendChart() {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255, 255, 255, 0.08)' },
-          ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+          grid: { color: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)' },
+          ticks: { color: isLight ? '#475569' : '#94a3b8', font: { family: 'Outfit', size: 11 } }
         },
         yTncc: {
           type: 'linear',
           position: 'right',
           display: visibleSeries.tnccUltra || visibleSeries.tnccCobre,
-          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          grid: { color: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.06)' },
           ticks: {
-            color: '#00D2FF',
+            color: isLight ? '#0284c7' : '#00D2FF',
             font: { family: 'JetBrains Mono', size: 11 },
             callback: v => v.toFixed(1) + '%'
           },
           title: {
             display: true,
             text: 'TNCC Porcentual (%)',
-            color: '#00D2FF',
+            color: isLight ? '#0284c7' : '#00D2FF',
             font: { family: 'Outfit', size: 11, weight: 'bold' }
           }
         },
@@ -482,14 +530,14 @@ function buildTrendChart() {
           display: visibleSeries.instFibra || visibleSeries.instCobre || visibleSeries.retFibra || visibleSeries.retCobre || visibleSeries.netFibra,
           grid: { drawOnChartArea: false },
           ticks: {
-            color: '#cbd5e1',
+            color: isLight ? '#475569' : '#cbd5e1',
             font: { family: 'JetBrains Mono', size: 10 },
             callback: v => (v >= 1000 || v <= -1000) ? (v/1000).toFixed(0) + 'k' : v
           },
           title: {
             display: true,
             text: 'Flujos (Instalaciones / Retiros / Balance)',
-            color: '#cbd5e1',
+            color: isLight ? '#475569' : '#cbd5e1',
             font: { family: 'Outfit', size: 11 }
           }
         },
@@ -1252,7 +1300,49 @@ const formatPct = n => (n >= 0 ? '+' : '') + n.toFixed(2).replace('.', ',') + '%
 const sumArr = arr => arr.reduce((a, b) => a + b, 0);
 const avgArr = arr => arr.reduce((a, b) => a + b, 0) / (arr.length || 1);
 
+function initTheme() {
+  let savedTheme = 'dark';
+  try {
+    savedTheme = localStorage.getItem('tncc_theme') || 'dark';
+  } catch (e) {}
+  applyTheme(savedTheme, false);
+}
+
+function toggleTheme() {
+  const isLight = document.documentElement.classList.contains('light-mode');
+  const nextTheme = isLight ? 'dark' : 'light';
+  applyTheme(nextTheme, true);
+}
+
+function applyTheme(theme, rebuildChart = true) {
+  const isLight = theme === 'light';
+  if (isLight) {
+    document.documentElement.classList.add('light-mode');
+  } else {
+    document.documentElement.classList.remove('light-mode');
+  }
+  try {
+    localStorage.setItem('tncc_theme', theme);
+  } catch (e) {}
+
+  const labelEl = document.getElementById('themeToggleLabel');
+  if (labelEl) {
+    labelEl.textContent = isLight ? 'Modo Oscuro' : 'Modo Claro';
+  }
+
+  const btnEl = document.getElementById('themeToggleBtn');
+  if (btnEl) {
+    btnEl.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+    btnEl.title = isLight ? 'Cambiar a Modo Neón Oscuro' : 'Cambiar a Modo Claro';
+  }
+
+  if (rebuildChart && typeof buildTrendChart === 'function') {
+    buildTrendChart();
+  }
+}
+
 function initStandaloneReport() {
+  initTheme();
   if (window.lucide) {
     lucide.createIcons();
   }
