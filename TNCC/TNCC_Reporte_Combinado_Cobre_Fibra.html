@@ -2659,27 +2659,7 @@ if (document.readyState === 'loading') {
 <body>
 
   <!-- External Studio Control Panel (Panel Externo de Gestión - Separado del Reporte) -->
-  <aside class="external-studio-panel" id="externalStudioPanel">
-    <div class="studio-brand-group">
-      <div class="studio-icon-badge">
-        <i data-lucide="sliders"></i>
-      </div>
-      <div>
-        <span class="studio-title-main">TNCC Analytics Studio</span>
-        <span class="studio-title-sub">Reporte Combinado Cobre | Fibra</span>
-      </div>
-    </div>
-
-    <!-- Acciones del Panel Externo -->
-    <div class="studio-actions">
-      <button type="button" class="btn-studio-edit" onclick="openMetricsEditor()">
-        <i data-lucide="edit-3"></i> Editar métricas
-      </button>
-      <button type="button" class="btn-studio-download" onclick="downloadStandaloneReport()">
-        <i data-lucide="download"></i> Descargar Reporte HTML (Independiente)
-      </button>
-    </div>
-  </aside>
+  
 
   <!-- Main Container del Reporte -->
   <main class="dashboard-layout" id="reportMainContainer">
@@ -3233,6 +3213,9 @@ if (document.readyState === 'loading') {
     </div>
   </footer>
 
+  <!-- =========================================================
+       MODAL DE EDICIÓN DE MÉTRICAS Y METADATOS
+  ========================================================= -->
   
 
         <!-- Tab 3: Footer & Sources -->

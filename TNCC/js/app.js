@@ -1833,21 +1833,29 @@ if (document.readyState === 'loading') {
   const scriptApp = clone.querySelector('script[src*="app.js"]');
   if (scriptApp) scriptApp.remove();
 
-  const inlineScriptEl = clone.ownerDocument.createElement('script');
+  const inlineScriptEl = document.createElement('script');
   inlineScriptEl.textContent = standaloneScriptContent;
-  clone.querySelector('body').appendChild(inlineScriptEl);
+  const bodyTarget = clone.querySelector('body') || clone;
+  bodyTarget.appendChild(inlineScriptEl);
 
   // 9. Genera el Blob y descarga inmediata sin latencia ni dependencias de red
-  const htmlOutput = '<!DOCTYPE html>\n' + clone.outerHTML;
-  const blob = new Blob([htmlOutput], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'TNCC_Reporte_Combinado_Cobre_Fibra.html';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  try {
+    const htmlOutput = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([htmlOutput], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'TNCC_Reporte_Combinado_Cobre_Fibra.html';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      if (link.parentNode) link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 2500);
+  } catch (err) {
+    console.warn('Fallo en descarga Blob, redirigiendo a archivo independiente:', err);
+    window.location.href = 'TNCC_Reporte_Combinado_Cobre_Fibra.html';
+  }
 }
 
 // Inicializar al cargar el documento
