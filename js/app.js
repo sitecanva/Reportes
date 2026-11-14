@@ -72,7 +72,7 @@ function initDashboard() {
     .catch(() => {});
 
   setupEditorEvents();
-  buildTrendChart();
+  recalculateAndRenderDashboard();
 
   // Mostrar automáticamente el popup de bienvenida al ingresar
   setTimeout(() => {
@@ -760,6 +760,118 @@ function recalculateAndRenderDashboard() {
     const avgRetC = Math.round(totalRetC / (c.retiros.length || 1));
     elNarrativeCobre.innerHTML = `En cuanto a la tecnología <strong>Aba Cobre</strong>, se contabilizaron <strong>${formatNum(totalInstC)} instalaciones</strong> y <strong>${formatNum(totalRetC)} retiros</strong>, totalizando una contracción de cartera de <strong>${formatPct(pctVarCarteraC)}</strong> (${formatNum(varCarteraC)} líneas netas) y un TNCC acumulado de <strong>${formatPct(tnccAcumC)}</strong> (promedio mensual de ${formatPct(avgTnccC)}), ubicándose con consistencia en el cuadrante <strong>"Muy lento o estancado"</strong>.<br><br>
     Este comportamiento responde a la <strong>política corporativa deliberada de vaciado y apagado de centrales de cobre obsoletas</strong> (promedio de ${formatNum(avgInstC)} instalaciones/mes frente a ${formatNum(avgRetC)} retiros/mes). El desafío crítico reside en canalizar este flujo saliente hacia la fibra propia antes de que abandonen la empresa.`;
+  }
+
+  
+  // 9. Actualización Dinámica de la Matriz de Criterios (Leyenda Normativa)
+  const legendRowsUltra = ['rowBajaUltra', 'rowModeradaUltra', 'rowAltaUltra'];
+  legendRowsUltra.forEach(id => {
+    const r = document.getElementById(id);
+    if (r) {
+      r.classList.remove('active-row-baja', 'active-row-moderada', 'active-row-alta');
+      const oldBadge = r.querySelector('.legend-badge.ultra');
+      if (oldBadge) oldBadge.remove();
+    }
+  });
+
+  let activeRowUltraId = 'rowBajaUltra';
+  let activeClassUltra = 'active-row-baja';
+  let iconNameUltra = 'alert-triangle';
+
+  if (tnccAcumF > 2.0) {
+    activeRowUltraId = 'rowAltaUltra';
+    activeClassUltra = 'active-row-alta';
+    iconNameUltra = 'zap';
+  } else if (tnccAcumF >= 0.5) {
+    activeRowUltraId = 'rowModeradaUltra';
+    activeClassUltra = 'active-row-moderada';
+    iconNameUltra = 'check';
+  }
+
+  const activeRowUltra = document.getElementById(activeRowUltraId);
+  if (activeRowUltra) {
+    activeRowUltra.classList.add(activeClassUltra);
+    const cellRange = activeRowUltra.querySelector('.range-status-col');
+    if (cellRange) {
+      const badgeSpan = document.createElement('span');
+      badgeSpan.className = 'legend-badge ultra';
+      badgeSpan.innerHTML = '<i data-lucide="' + iconNameUltra + '" style="width:10px;height:10px;display:inline;"></i> Ultra: ' + formatPct(tnccAcumF);
+      cellRange.appendChild(badgeSpan);
+    }
+  }
+
+  // Descripciones actualizadas de la matriz
+  const descBajaUltra = document.querySelector('#rowBajaUltra .desc');
+  if (descBajaUltra) {
+    descBajaUltra.innerHTML = '<strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva. La fibra registra una base de cierre de ' + formatNum(carteraFinalF) + ' suscriptores frente a los ' + formatNum(carteraInicioF) + ' iniciales.';
+  }
+  const descModUltra = document.querySelector('#rowModeradaUltra .desc');
+  if (descModUltra) {
+    descModUltra.innerHTML = 'La empresa está expandiendo su cartera de manera constante. El negocio mantiene una trayectoria positiva, situando la base de cierre en ' + formatNum(carteraFinalF) + ' suscriptores.';
+  }
+
+  const descBajaCobre = document.querySelector('#rowBajaCobre .desc');
+  if (descBajaCobre) {
+    descBajaCobre.innerHTML = 'Contracción crítica continua por apagado de red legada. Cobre acumula ' + formatNum(totalRetC) + ' retiros y sitúa su cartera de cierre en ' + formatNum(carteraFinalC) + ' líneas activas.';
+  }
+
+  // 10. Actualización Automática de Hallazgos Cruzados e Interacción Tecnológica
+  // Cruce 1: Retiro de Planta Cobre
+  const crossPillCobre = document.getElementById('crossPillCobre');
+  if (crossPillCobre) crossPillCobre.textContent = (varCarteraC >= 0 ? '+' : '') + Math.round(varCarteraC / 1000) + 'k Líneas';
+  const crossDescCobre = document.getElementById('crossDescCobre');
+  if (crossDescCobre) {
+    const avgInstC = Math.round(totalInstC / (c.instalaciones.length || 1));
+    crossDescCobre.innerHTML = 'La empresa no busca sostener el cobre: la contracción acumulada del <strong>' + formatPct(pctVarCarteraC) + '</strong> (de ' + (carteraInicioC / 1000000).toFixed(2) + 'M a ' + (carteraFinalC / 1000000).toFixed(2) + 'M abonados) y las reducidas instalaciones (promedio ' + formatNum(avgInstC) + '/mes) responden a la <strong>política deliberada de vaciado y retiro de la planta obsoleta</strong>.';
+  }
+
+  // Cruce 2: Diagnóstico Matriz: Fibra
+  const crossTitleFibra = document.getElementById('crossTitleFibra');
+  if (crossTitleFibra) crossTitleFibra.style.color = (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185');
+  const crossPillFibra = document.getElementById('crossPillFibra');
+  if (crossPillFibra) {
+    crossPillFibra.textContent = 'TNCC: ' + formatPct(tnccAcumF);
+    crossPillFibra.style.color = (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185');
+    crossPillFibra.style.background = (tnccAcumF >= 0.5 ? 'rgba(56, 189, 248, 0.2)' : 'rgba(244, 63, 94, 0.2)');
+  }
+  const crossDescFibra = document.getElementById('crossDescFibra');
+  if (crossDescFibra) {
+    if (tnccAcumF >= 0.5) {
+      crossDescFibra.innerHTML = 'Bajo la <strong>Leyenda Normativa</strong>, el rango de 0.6% a 2% califica como <em>"Saludable (crecimiento constante)"</em>. Al arrojar un TNCC acumulado de <strong>' + formatPct(tnccAcumF) + '</strong> y un balance neto positivo (+' + formatNum(balanceNetoF) + '), <strong>la fibra retoma una trayectoria de reemplazo positivo</strong>.';
+    } else {
+      crossDescFibra.innerHTML = 'Bajo la <strong>Leyenda Normativa</strong>, rangos de 0% a 0.5% señalan <em>"Muy lento o estancado (rendimiento débil)"</em>. Al arrojar un TNCC acumulado de <strong>' + formatPct(tnccAcumF) + '</strong>, <strong>el crecimiento de Fibra requiere ajustes comerciales inmediatos</strong>.';
+    }
+  }
+  const crossFooterFibra = document.getElementById('crossFooterFibra');
+  if (crossFooterFibra) {
+    crossFooterFibra.innerHTML = 'Dictamen normativo: <strong style="color: ' + (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185') + ';">' + (tnccAcumF >= 0.5 ? 'Ritmo saludable de captación' : 'Exige ajustes comerciales inmediatos') + '</strong>.';
+  }
+
+  // Cruce 3: Fuga Fuera de la Empresa
+  const pctAbsorcion = totalRetC > 0 ? ((totalInstF / totalRetC) * 100) : 0;
+  const crossPillFuga = document.getElementById('crossPillFuga');
+  if (crossPillFuga) crossPillFuga.textContent = pctAbsorcion.toFixed(1) + '% Absorción';
+  const crossDescFuga = document.getElementById('crossDescFuga');
+  if (crossDescFuga) {
+    const pctFuga = Math.max(0, 100 - pctAbsorcion).toFixed(0);
+    crossDescFuga.innerHTML = 'Frente a los <strong>' + formatNum(totalRetC) + ' retiros en cobre</strong>, la fibra sumó <strong>' + formatNum(totalInstF) + ' instalaciones</strong>. Más del <strong>' + pctFuga + '% de los abonados retirados</strong> en cobre no migraron a la fibra propia, saliendo del ecosistema de la empresa.';
+  }
+  const crossFooterFuga = document.getElementById('crossFooterFuga');
+  if (crossFooterFuga) {
+    const fugaTotal = Math.max(0, totalRetC - totalInstF);
+    crossFooterFuga.innerHTML = 'Fuga neta de mercado: <strong style="color: #fbbf24;">' + formatNum(fugaTotal) + ' usuarios perdidos para la empresa</strong>.';
+  }
+
+  // Cruce 4: Blindaje Requerido en FTTH
+  const crossPillBlindaje = document.getElementById('crossPillBlindaje');
+  if (crossPillBlindaje) crossPillBlindaje.textContent = 'Ratio: ' + ratioEficienciaF.toFixed(2);
+  const crossDescBlindaje = document.getElementById('crossDescBlindaje');
+  if (crossDescBlindaje) {
+    crossDescBlindaje.innerHTML = 'La cartera de fibra adquirió <strong>' + formatNum(totalInstF) + ' clientes</strong> frente a <strong>' + formatNum(totalRetF) + ' retiros propios</strong>, arrojando un balance neto definitivo de <strong>' + (balanceNetoF >= 0 ? '+' : '') + formatNum(balanceNetoF) + ' cuentas</strong>. Se requiere sincronizar la desconexión de cobre con la instalación de fibra y blindar la base activa (' + formatNum(carteraFinalF) + ' suscriptores) para maximizar la retención.';
+  }
+  const crossFooterBlindaje = document.getElementById('crossFooterBlindaje');
+  if (crossFooterBlindaje) {
+    crossFooterBlindaje.innerHTML = 'Meta estratégica: <strong style="color: #34d399;">Migración sin churn ni desenganche</strong>.';
   }
 
   // Re-render del gráfico
