@@ -12,7 +12,7 @@ const telecomData = {
     colorAlpha: 'rgba(255, 140, 66, 0.85)',
     months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
     carteraInicio: [1517643, 1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265],
-    carteraCierre: [1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265, 1101749],
+    carteraCierre: [1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265, 1160781],
     instalaciones: [1195, 1112, 1114, 910, 869, 803, 623, 650, 656, 952],
     retiros: [36980, 95916, 46013, 39139, 41321, 50992, 40848, 21021, 22080, 30468],
     tncc: [-2.36, -6.40, -3.24, -2.85, -3.10, -3.97, -3.32, -1.74, -1.86, -2.53]
@@ -668,7 +668,7 @@ function recalculateAndRenderDashboard() {
   const totalRetC = sumArr(c.retiros);
   const balanceNetoC = totalInstC - totalRetC;
   const carteraInicioC = c.carteraInicio[0] || 1;
-  const carteraFinalC = carteraInicioC + balanceNetoC;
+  const carteraFinalC = (c.carteraCierre && c.carteraCierre.length) ? c.carteraCierre[c.carteraCierre.length - 1] : 1160781;
   const varCarteraC = carteraFinalC - carteraInicioC;
   const pctVarCarteraC = ((carteraFinalC - carteraInicioC) / carteraInicioC) * 100;
   const tnccAcumC = (balanceNetoC / carteraInicioC) * 100;
