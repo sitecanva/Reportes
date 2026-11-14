@@ -23,6 +23,7 @@ const telecomData = {
     colorAlpha: 'rgba(0, 210, 255, 0.85)',
     months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
     carteraInicio: [175609, 178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577],
+    carteraCierre: [178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577, 171866],
     instalaciones: [3926, 4333, 3028, 884, 5346, 6056, 2406, 5288, 4157, 5074],
     retiros: [694, 861, 2543, 416, 615, 464, 22371, 4079, 4413, 2363],
     tncc: [1.84, 1.94, 0.27, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15, 1.56]
@@ -655,7 +656,7 @@ function recalculateAndRenderDashboard() {
   const totalRetF = sumArr(f.retiros);
   const balanceNetoF = totalInstF - totalRetF;
   const carteraInicioF = f.carteraInicio[0] || 1;
-  const carteraFinalF = carteraInicioF + balanceNetoF;
+  const carteraFinalF = (f.carteraCierre && f.carteraCierre.length) ? f.carteraCierre[f.carteraCierre.length - 1] : 171866;
   const varCarteraF = carteraFinalF - carteraInicioF;
   const tnccAcumF = (balanceNetoF / carteraInicioF) * 100;
   const avgTnccF = avgArr(f.tncc);
