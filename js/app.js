@@ -10,11 +10,11 @@ const telecomData = {
     type: 'cobre',
     color: '#FF8C42',
     colorAlpha: 'rgba(255, 140, 66, 0.85)',
-    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept'],
-    carteraInicio: [1517643, 1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689],
-    instalaciones: [1195, 1112, 1114, 910, 869, 803, 623, 650, 656],
-    retiros: [36980, 95916, 46013, 39139, 41321, 50992, 40848, 21021, 22080],
-    tncc: [-2.36, -6.40, -3.24, -2.85, -3.10, -3.97, -3.32, -1.74, -1.86]
+    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
+    carteraInicio: [1517643, 1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265],
+    instalaciones: [1195, 1112, 1114, 910, 869, 803, 623, 650, 656, 952],
+    retiros: [36980, 95916, 46013, 39139, 41321, 50992, 40848, 21021, 22080, 30468],
+    tncc: [-2.36, -6.40, -3.24, -2.85, -3.10, -3.97, -3.32, -1.74, -1.86, -2.53]
   },
   fibra: {
     name: 'Aba Ultra (Fibra)',
@@ -666,7 +666,7 @@ function recalculateAndRenderDashboard() {
   const totalRetC = sumArr(c.retiros);
   const balanceNetoC = totalInstC - totalRetC;
   const carteraInicioC = c.carteraInicio[0] || 1;
-  const carteraFinalC = c.carteraInicio[c.carteraInicio.length - 1] || carteraInicioC;
+  const carteraFinalC = carteraInicioC + balanceNetoC;
   const varCarteraC = carteraFinalC - carteraInicioC;
   const pctVarCarteraC = ((carteraFinalC - carteraInicioC) / carteraInicioC) * 100;
   const tnccAcumC = (balanceNetoC / carteraInicioC) * 100;
@@ -854,7 +854,7 @@ Jun,187994,6056,465,2.97,1263474,803,50992,-3.97
 Jul,193585,2406,22371,-10.31,1213285,623,40848,-3.32
 Ago,173620,5288,4079,0.70,1173060,650,21021,-1.74
 Sept,174833,4157,4413,-0.15,1152689,656,22080,-1.86
-Oct,174577,5074,2363,1.56,1152689,0,0,0.00`;
+Oct,174577,5074,2363,1.56,1131265,952,30468,-2.53`;
   const textarea = document.getElementById('editorDataText');
   if (textarea) textarea.value = sample;
   setEditorStatus("Plantilla de ejemplo cargada.", false);
