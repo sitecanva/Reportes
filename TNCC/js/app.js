@@ -12,6 +12,7 @@ const telecomData = {
     colorAlpha: 'rgba(255, 140, 66, 0.85)',
     months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
     carteraInicio: [1517643, 1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265],
+    carteraCierre: [1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265, 1101749],
     instalaciones: [1195, 1112, 1114, 910, 869, 803, 623, 650, 656, 952],
     retiros: [36980, 95916, 46013, 39139, 41321, 50992, 40848, 21021, 22080, 30468],
     tncc: [-2.36, -6.40, -3.24, -2.85, -3.10, -3.97, -3.32, -1.74, -1.86, -2.53]
@@ -247,8 +248,8 @@ function buildTrendChart() {
   if (visibleSeries.carteraFibra) {
     datasets.push({
       type: 'line',
-      label: 'Cartera Fibra (Líneas)',
-      data: f.carteraInicio,
+      label: 'Cartera Cierre Fibra (Líneas)',
+      data: f.carteraCierre || f.carteraInicio,
       borderColor: '#C084FC',
       borderWidth: 2.5,
       borderDash: [5, 4],
@@ -265,8 +266,8 @@ function buildTrendChart() {
   if (visibleSeries.carteraCobre) {
     datasets.push({
       type: 'line',
-      label: 'Cartera Cobre (Líneas)',
-      data: c.carteraInicio,
+      label: 'Cartera Cierre Cobre (Líneas)',
+      data: c.carteraCierre || c.carteraInicio,
       borderColor: '#FBBF24',
       borderWidth: 2.5,
       borderDash: [6, 4],
@@ -506,7 +507,7 @@ function buildTrendChart() {
           },
           title: {
             display: true,
-            text: 'Cartera Fibra',
+            text: 'Cartera Cierre Fibra',
             color: '#C084FC',
             font: { family: 'Outfit', size: 10, weight: 'bold' }
           }
@@ -523,7 +524,7 @@ function buildTrendChart() {
           },
           title: {
             display: true,
-            text: 'Cartera Cobre',
+            text: 'Cartera Cierre Cobre',
             color: '#FBBF24',
             font: { family: 'Outfit', size: 10, weight: 'bold' }
           }
@@ -634,8 +635,8 @@ function switchView(view) {
   syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
   syncBtn('toggleRetCobre', 'retCobre', 'Retiros Cobre');
   syncBtn('toggleNetFibra', 'netFibra', 'Balance Neto Fibra');
-  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Fibra');
-  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cobre');
+  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Cierre Fibra');
+  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cierre Cobre');
 
   if (window.lucide) {
     lucide.createIcons();
@@ -1340,8 +1341,8 @@ function buildTrendChart() {
   if (visibleSeries.carteraFibra) {
     datasets.push({
       type: 'line',
-      label: 'Cartera Fibra (Líneas)',
-      data: f.carteraInicio,
+      label: 'Cartera Cierre Fibra (Líneas)',
+      data: f.carteraCierre || f.carteraInicio,
       borderColor: '#C084FC',
       borderWidth: 2.5,
       borderDash: [5, 4],
@@ -1358,8 +1359,8 @@ function buildTrendChart() {
   if (visibleSeries.carteraCobre) {
     datasets.push({
       type: 'line',
-      label: 'Cartera Cobre (Líneas)',
-      data: c.carteraInicio,
+      label: 'Cartera Cierre Cobre (Líneas)',
+      data: c.carteraCierre || c.carteraInicio,
       borderColor: '#FBBF24',
       borderWidth: 2.5,
       borderDash: [6, 4],
@@ -1597,7 +1598,7 @@ function buildTrendChart() {
           },
           title: {
             display: true,
-            text: 'Cartera Fibra',
+            text: 'Cartera Cierre Fibra',
             color: '#C084FC',
             font: { family: 'Outfit', size: 10, weight: 'bold' }
           }
@@ -1614,7 +1615,7 @@ function buildTrendChart() {
           },
           title: {
             display: true,
-            text: 'Cartera Cobre',
+            text: 'Cartera Cierre Cobre',
             color: '#FBBF24',
             font: { family: 'Outfit', size: 10, weight: 'bold' }
           }
@@ -1713,8 +1714,8 @@ function switchView(view) {
   syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
   syncBtn('toggleRetCobre', 'retCobre', 'Retiros Cobre');
   syncBtn('toggleNetFibra', 'netFibra', 'Balance Neto Fibra');
-  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Fibra');
-  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cobre');
+  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Cierre Fibra');
+  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cierre Cobre');
 
   if (window.lucide) lucide.createIcons();
   buildTrendChart();
