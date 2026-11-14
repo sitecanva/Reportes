@@ -21,11 +21,11 @@ const telecomData = {
     type: 'fibra',
     color: '#00D2FF',
     colorAlpha: 'rgba(0, 210, 255, 0.85)',
-    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept'],
-    carteraInicio: [175609, 178841, 182313, 182795, 183262, 187994, 193585, 173620, 174829],
-    instalaciones: [3926, 4333, 3028, 884, 5346, 6056, 2406, 5288, 4157],
-    retiros: [694, 861, 2546, 417, 614, 465, 22371, 4079, 4413],
-    tncc: [1.84, 1.94, 0.26, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15]
+    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
+    carteraInicio: [175609, 178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577],
+    instalaciones: [3926, 4333, 3028, 884, 5346, 6056, 2406, 5288, 4157, 5074],
+    retiros: [694, 861, 2543, 416, 615, 464, 22371, 4079, 4413, 2363],
+    tncc: [1.84, 1.94, 0.27, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15, 1.56]
   }
 };
 
@@ -655,7 +655,7 @@ function recalculateAndRenderDashboard() {
   const totalRetF = sumArr(f.retiros);
   const balanceNetoF = totalInstF - totalRetF;
   const carteraInicioF = f.carteraInicio[0] || 1;
-  const carteraFinalF = f.carteraInicio[f.carteraInicio.length - 1] || carteraInicioF;
+  const carteraFinalF = carteraInicioF + balanceNetoF;
   const varCarteraF = carteraFinalF - carteraInicioF;
   const tnccAcumF = (balanceNetoF / carteraInicioF) * 100;
   const avgTnccF = avgArr(f.tncc);
@@ -853,7 +853,8 @@ May,183262,5346,614,2.58,1303926,869,41321,-3.10
 Jun,187994,6056,465,2.97,1263474,803,50992,-3.97
 Jul,193585,2406,22371,-10.31,1213285,623,40848,-3.32
 Ago,173620,5288,4079,0.70,1173060,650,21021,-1.74
-Sept,174829,4157,4413,-0.15,1152689,656,22080,-1.86`;
+Sept,174833,4157,4413,-0.15,1152689,656,22080,-1.86
+Oct,174577,5074,2363,1.56,1152689,0,0,0.00`;
   const textarea = document.getElementById('editorDataText');
   if (textarea) textarea.value = sample;
   setEditorStatus("Plantilla de ejemplo cargada.", false);
