@@ -719,7 +719,7 @@ function recalculateAndRenderDashboard() {
 
   const elCarteraDesc = document.getElementById('dispCarteraDesc');
   if (elCarteraDesc) {
-    elCarteraDesc.innerHTML = `Cobre reduce su cartera en <strong>${formatPct(pctVarCarteraC)}</strong> (${formatNum(varCarteraC)} cuentas). La fibra óptica no logra absorber ese volumen, cerrando Septiembre por debajo de su punto de partida en enero.`;
+    elCarteraDesc.innerHTML = `Cobre reduce su cartera en <strong>${formatPct(pctVarCarteraC)}</strong> (${formatNum(varCarteraC)} cuentas). La fibra óptica amortigua parte de la migración, cerrando octubre en ${formatNum(carteraFinalF)} suscriptores.`;
   }
 
   // 6. Actualizar Tarjeta 4: Balance de Flujos Netos
@@ -750,8 +750,9 @@ function recalculateAndRenderDashboard() {
 
   const elNarrativeUltra = document.getElementById('narrativeUltraText');
   if (elNarrativeUltra) {
-    elNarrativeUltra.innerHTML = `Para el período evaluado (${periodoTxt}), la cartera de <strong>Aba Ultra</strong> registró un total de <strong>${formatNum(totalInstF)} clientes adquiridos (instalaciones)</strong> frente a <strong>${formatNum(totalRetF)} clientes perdidos (retiros)</strong>, arrojando una variación neta de <strong>${formatNum(balanceNetoF)} cuentas</strong>. Esto sitúa la Tasa Neta de Crecimiento de Cartera en <strong>${formatPct(tnccAcumF)} acumulado</strong> (promedio de ${formatPct(avgTnccF)} mensual), clasificando formalmente en la Matriz Normativa en estado <strong>"Muy lento o estancado"</strong>.<br><br>
-    A pesar de picos positivos en el ciclo, los niveles de retiros impidieron sostener la expansión neta, cerrando el ciclo en ${formatNum(carteraFinalF)} suscriptores (frente a los ${formatNum(carteraInicioF)} iniciales). La ratio de reemplazo es de <strong>${ratioEficienciaF.toFixed(2)}</strong>, exigiendo blindaje de cartera FTTH y retención proactiva.`;
+    const estadoNormativoUltra = tnccAcumF > 2.0 ? 'Excelente' : (tnccAcumF >= 0.6 ? 'Saludable' : 'Muy lento o estancado');
+    elNarrativeUltra.innerHTML = `Para el período evaluado (${periodoTxt}), la cartera de <strong>Aba Ultra</strong> registró un total de <strong>${formatNum(totalInstF)} clientes adquiridos (instalaciones)</strong> frente a <strong>${formatNum(totalRetF)} clientes perdidos (retiros)</strong>, arrojando una variación neta de <strong>+${formatNum(balanceNetoF)} cuentas</strong>. Esto sitúa la Tasa Neta de Crecimiento de Cartera en <strong>${formatPct(tnccAcumF)} acumulado</strong> (promedio de ${formatPct(avgTnccF)} mensual), clasificando formalmente en la Matriz Normativa en estado <strong>"${estadoNormativoUltra}"</strong>.<br><br>
+    A pesar de la volatilidad en el ciclo (con el shock de retiros en julio), el balance neto acumulado es de <strong>+${formatNum(balanceNetoF)} cuentas</strong>, cerrando octubre en <strong>${formatNum(carteraFinalF)} suscriptores</strong>. La ratio de reemplazo es de <strong>${ratioEficienciaF.toFixed(2)}</strong>, situando a la fibra en terreno de expansión neta.`;
   }
 
   const elNarrativeCobre = document.getElementById('narrativeCobreText');
@@ -803,11 +804,11 @@ function recalculateAndRenderDashboard() {
   // Descripciones actualizadas de la matriz
   const descBajaUltra = document.querySelector('#rowBajaUltra .desc');
   if (descBajaUltra) {
-    descBajaUltra.innerHTML = '<strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva. La fibra registra una base de cierre de ' + formatNum(carteraFinalF) + ' suscriptores frente a los ' + formatNum(carteraInicioF) + ' iniciales.';
+    descBajaUltra.innerHTML = '<strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva.';
   }
   const descModUltra = document.querySelector('#rowModeradaUltra .desc');
   if (descModUltra) {
-    descModUltra.innerHTML = 'La empresa está expandiendo su cartera de manera constante. El negocio mantiene una trayectoria positiva, situando la base de cierre en ' + formatNum(carteraFinalF) + ' suscriptores.';
+    descModUltra.innerHTML = 'La empresa está expandiendo su cartera de manera constante. El negocio mantiene una trayectoria positiva, situando la base de cierre de octubre en ' + formatNum(carteraFinalF) + ' suscriptores.';
   }
 
   const descBajaCobre = document.querySelector('#rowBajaCobre .desc');
@@ -1368,6 +1369,7 @@ const sumArr = arr => arr.reduce((a, b) => a + b, 0);
 const avgArr = arr => arr.reduce((a, b) => a + b, 0) / (arr.length || 1);
 
 function initStandaloneReport() {
+  recalculateAndRenderDashboard();
   if (window.lucide) {
     lucide.createIcons();
   }
@@ -1916,6 +1918,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function initStandaloneReport() {
+  recalculateAndRenderDashboard();
   if (window.lucide) {
     lucide.createIcons();
   }
