@@ -476,7 +476,7 @@ body {
 /* KPI Grid - Row 1 Dual Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 18px;
 }
 
@@ -822,6 +822,20 @@ body {
 .chart-toggle-btn.active {
   border-color: currentColor;
   box-shadow: 0 0 10px currentColor;
+}
+
+.kpi-card.churn-card {
+  border-color: rgba(244, 63, 94, 0.35);
+}
+.kpi-card.churn-card:hover {
+  border-color: rgba(244, 63, 94, 0.65);
+  box-shadow: 0 10px 30px rgba(244, 63, 94, 0.2);
+}
+.chart-toggle-btn.btn-churn-fibra.active {
+  background: rgba(244, 63, 94, 0.22);
+  color: #f43f5e;
+  border-color: #f43f5e;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
 }
 
 .chart-toggle-btn.btn-tncc-ultra.active {
@@ -2295,6 +2309,50 @@ body {
             Aba Ultra alcanza un balance neto positivo de <strong>+1.679 clientes</strong> (+40.498 instalaciones vs. 38.819 retiros). Más de <strong>414.000 clientes salieron</strong> del ecosistema de la empresa sin migrar.
           </p>
         </div>
+      
+      <!-- Card 5: Tasa Churn Acumulado Año (Fibra) -->
+      <article class="kpi-card churn-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-box" style="background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.35); color: #f43f5e;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user-minus" aria-hidden="true" class="lucide lucide-user-minus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+          </div>
+          <h2 class="kpi-title">Tasa Churn Acumulado Año<br><span style="font-size: 0.88em; font-weight: 500; color: #f43f5e;">Fibra (Ene - Oct)</span></h2>
+          <button type="button" class="kpi-info-btn" onclick="openIndicatorHelp('churn')" title="Concepto del indicador" aria-label="Ayuda Tasa Churn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="info" aria-hidden="true" class="lucide lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+          </button>
+        </div>
+
+        <div class="kpi-formula-badge">
+          <span>Churn:</span>
+          <span class="formula-var">Retiros Acumulados</span>
+          <span class="formula-div">/</span>
+          <span class="formula-var">Prom. Cartera</span>
+        </div>
+
+        <div class="kpi-dual-values">
+          <div class="kpi-val-group">
+            <span class="kpi-product-badge ultra-badge" style="background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #f43f5e;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" aria-hidden="true" class="lucide lucide-zap"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"></path></svg> Churn Acumulado
+            </span>
+            <div class="big-stat-number" id="dispChurnAcumUltra" style="color: #f43f5e;">22,38%</div>
+            <span class="stat-subtext" id="dispChurnSubUltra">Retiros: 38.819 / Prom: 173.445</span>
+          </div>
+          <div class="kpi-dual-divider"></div>
+          <div class="kpi-val-group text-right">
+            <span class="kpi-product-badge" style="background: rgba(148, 163, 184, 0.15); border-color: #94a3b8; color: #cbd5e1;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="activity" aria-hidden="true" class="lucide lucide-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Prom. Mensual
+            </span>
+            <div class="big-stat-number" id="dispChurnPromUltra" style="color: #38bdf8;">2,11%</div>
+            <span class="stat-subtext" id="dispChurnSinJulioUltra">Sin Julio: 1,05%</span>
+          </div>
+        </div>
+
+        <div class="kpi-dual-desc">
+          <p class="kpi-description" id="dispChurnDesc">
+            Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>0,23% a 2,60%</strong>). Afectado por el <strong>outlier de Julio (11,70%)</strong>. Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br>
+            <span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>
+          </p>
+        </div>
       </article>
 
     </section>
@@ -2318,6 +2376,9 @@ body {
           <span class="trend-badge" style="background: rgba(255, 140, 66, 0.15); border-color: rgba(255, 140, 66, 0.4); color: #FF8C42;">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layers" aria-hidden="true" style="width:12px;height:12px;" class="lucide lucide-layers"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg> Prom. Cobre: -3.14%
           </span>
+                    <span class="trend-badge" style="background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: #f43f5e;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user-minus" aria-hidden="true" style="width:12px;height:12px;" class="lucide lucide-user-minus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="22" x2="16" y1="11" y2="11"></line></svg> Churn Acum: 22.38% (Prom: 2.11%)
+          </span>
           <span class="trend-badge" style="background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.4); color: #FFD700;">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="calendar" aria-hidden="true" style="width:12px;height:12px;" class="lucide lucide-calendar"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path></svg> Ene - Oct 2026
           </span>
@@ -2331,6 +2392,10 @@ body {
           
           <button class="chart-toggle-btn btn-tncc-ultra active" id="toggleTnccUltra" onclick="toggleSeries('tnccUltra')">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" aria-hidden="true" style="width:12px;height:12px;" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg> TNCC Fibra %
+          </button>
+          
+                    <button class="chart-toggle-btn btn-churn-fibra active" id="toggleChurnFibra" onclick="toggleSeries('churnFibra')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" aria-hidden="true" style="width:12px;height:12px;" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg> Churn Fibra %
           </button>
           
           <button class="chart-toggle-btn btn-tncc-cobre active" id="toggleTnccCobre" onclick="toggleSeries('tnccCobre')">
@@ -2370,6 +2435,7 @@ body {
           <span style="font-size: 0.74rem; color: var(--text-dim);">Línea Benchmark:</span>
           <select id="selectBenchmark" onchange="changeBenchmark()" style="background: rgba(15, 12, 45, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.74rem; outline: none; cursor: pointer;">
             <option value="thresholds">Umbrales Normativos (0.5% y 2%)</option>
+            <option value="avgChurn">Promedio Churn Fibra (2.11%)</option>
             <option value="avgUltra">Promedio Fibra (+0.17%)</option>
             <option value="avgCobre">Promedio Cobre (-3.14%)</option>
             <option value="zero">Línea Cero (0.00%)</option>
@@ -2839,17 +2905,41 @@ const telecomData = {
     2363
   ],
   "tncc": [
-    1.84,
-    1.94,
-    0.27,
-    0.26,
-    2.58,
-    2.97,
-    -10.31,
-    0.7,
-    -0.15,
-    1.56
-  ]
+      1.84,
+      1.94,
+      0.27,
+      0.26,
+      2.58,
+      2.97,
+      -10.31,
+      0.7,
+      -0.15,
+      1.56
+    ],
+    "churn": [
+      0.40,
+      0.48,
+      1.40,
+      0.23,
+      0.33,
+      0.25,
+      11.70,
+      2.36,
+      2.60,
+      1.38
+    ],
+    "churnAcumuladoAnio": {
+      "retiro": 38819,
+      "prom_cartera": 173445,
+      "churn_acumulado_pct": 22.38,
+      "nota": "El acumulado corresponde al periodo ene-sep; no incluye octubre."
+    },
+    "churnResumen": {
+      "promedio_simple_ene_oct_pct": 2.11,
+      "promedio_sin_julio_pct": 1.05,
+      "rango_sin_julio_pct": { "min": 0.23, "max": 2.60 },
+      "outlier": { "mes": "Jul", "churn_pct": 11.70 }
+    }
 }
 };
 let currentView = "combinado";
@@ -2858,6 +2948,7 @@ let trendChartInstance = null;
 const visibleSeries = {
   "tnccUltra": true,
   "tnccCobre": true,
+  "churnFibra": true,
   "instFibra": false,
   "instCobre": false,
   "retFibra": false,
@@ -3167,6 +3258,30 @@ function buildTrendChart() {
     });
   }
 
+    // 3. Churn Fibra (%)
+  if (visibleSeries.churnFibra) {
+    const churnDataArr = f.churn || [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38];
+    datasets.push({
+      type: 'line',
+      label: 'Churn Fibra (%)',
+      data: churnDataArr,
+      borderColor: '#F43F5E',
+      backgroundColor: 'rgba(244, 63, 94, 0.10)',
+      fill: false,
+      tension: 0.25,
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointBackgroundColor: '#F43F5E',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointStyle: 'triangle',
+      yAxisID: 'yTncc',
+      order: 0
+    });
+  }
+
   // 3. Balance Neto Fibra
   if (visibleSeries.netFibra) {
     const netF = f.instalaciones.map((inst, i) => inst - (f.retiros[i] || 0));
@@ -3321,6 +3436,18 @@ function buildTrendChart() {
       yAxisID: 'yTncc',
       order: 10
     });
+    } else if (currentBenchmark === 'avgChurn') {
+    datasets.push({
+      type: 'line',
+      label: 'Promedio Churn Fibra (2.11%)',
+      data: Array(months.length).fill(2.11),
+      borderColor: '#F43F5E',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
   } else if (currentBenchmark === 'avgUltra') {
     const avgF = Number(avgArr(f.tncc).toFixed(2));
     datasets.push({
@@ -3406,7 +3533,7 @@ function buildTrendChart() {
         yTncc: {
           type: 'linear',
           position: 'right',
-          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre,
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre || visibleSeries.churnFibra,
           grid: { color: 'rgba(255, 255, 255, 0.06)' },
           ticks: {
             color: '#00D2FF',
@@ -3480,6 +3607,7 @@ function toggleSeries(seriesKey) {
   visibleSeries[seriesKey] = !visibleSeries[seriesKey];
   const btnMap = {
     tnccUltra: 'toggleTnccUltra',
+    churnFibra: 'toggleChurnFibra',
     tnccCobre: 'toggleTnccCobre',
     instFibra: 'toggleInstFibra',
     instCobre: 'toggleInstCobre',
@@ -3519,6 +3647,7 @@ function switchView(view) {
     document.getElementById('btnViewCombinado').classList.add('active');
     visibleSeries.tnccUltra = true;
     visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = true;
     visibleSeries.instFibra = false;
     visibleSeries.instCobre = false;
     visibleSeries.retFibra = false;
@@ -3530,6 +3659,7 @@ function switchView(view) {
     document.getElementById('btnViewUltra').classList.add('active');
     visibleSeries.tnccUltra = true;
     visibleSeries.tnccCobre = false;
+    visibleSeries.churnFibra = true;
     visibleSeries.instFibra = true;
     visibleSeries.instCobre = false;
     visibleSeries.retFibra = true;
@@ -3541,6 +3671,7 @@ function switchView(view) {
     document.getElementById('btnViewCobre').classList.add('active');
     visibleSeries.tnccUltra = false;
     visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = false;
     visibleSeries.instFibra = false;
     visibleSeries.instCobre = true;
     visibleSeries.retFibra = false;
@@ -3560,6 +3691,7 @@ function switchView(view) {
 
   syncBtn('toggleTnccUltra', 'tnccUltra', 'TNCC Fibra %');
   syncBtn('toggleTnccCobre', 'tnccCobre', 'TNCC Cobre %');
+  syncBtn('toggleChurnFibra', 'churnFibra', 'Churn Fibra %');
   syncBtn('toggleInstFibra', 'instFibra', 'Instalaciones Fibra');
   syncBtn('toggleInstCobre', 'instCobre', 'Instalaciones Cobre');
   syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
@@ -3573,6 +3705,13 @@ function switchView(view) {
 }
 
 const INDICATOR_HELP_DATA = {
+  churn: {
+    badge: 'Tasa de Cancelación (Churn Rate)',
+    title: 'Tasa de Churn Fibra Óptica',
+    icon: 'user-minus',
+    color: '#f43f5e',
+    text: 'El Churn Rate mide el porcentaje de clientes que cancelan o se retiran del servicio respecto al promedio de la base activa en el período. Es el indicador por excelencia de pérdida de clientes y atrición, fundamental para evaluar la fidelidad y la estabilidad de la cartera de suscriptores.'
+  },
   tncc: {
     badge: '¿Sabías qué?...',
     title: "Tasa Neta de Crecimiento de Cartera (TNCC)",

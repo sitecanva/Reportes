@@ -469,7 +469,7 @@ body {
 /* KPI Grid - Row 1 Dual Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 18px;
 }
 
@@ -2053,4 +2053,20 @@ body {
     width: auto;
     padding: 9px 20px;
   }
+}
+
+.kpi-card.churn-card {
+  border-color: rgba(244, 63, 94, 0.35);
+}
+
+.kpi-card.churn-card:hover {
+  border-color: rgba(244, 63, 94, 0.65);
+  box-shadow: 0 10px 30px rgba(244, 63, 94, 0.2);
+}
+
+.chart-toggle-btn.btn-churn-fibra.active {
+  background: rgba(244, 63, 94, 0.22);
+  color: #f43f5e;
+  border-color: #f43f5e;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
 }

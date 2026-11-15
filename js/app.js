@@ -27,7 +27,20 @@ const telecomData = {
     carteraCierre: [178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577, 171866],
     instalaciones: [3926, 4333, 3028, 884, 5346, 6056, 2406, 5288, 4157, 5074],
     retiros: [694, 861, 2543, 416, 615, 464, 22371, 4079, 4413, 2363],
-    tncc: [1.84, 1.94, 0.27, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15, 1.56]
+    tncc: [1.84, 1.94, 0.27, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15, 1.56],
+    churn: [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38],
+    churnAcumuladoAnio: {
+      retiro: 38819,
+      prom_cartera: 173445,
+      churn_acumulado_pct: 22.38,
+      nota: "El acumulado corresponde al periodo ene-sep; no incluye octubre."
+    },
+    churnResumen: {
+      promedio_simple_ene_oct_pct: 2.11,
+      promedio_sin_julio_pct: 1.05,
+      rango_sin_julio_pct: { min: 0.23, max: 2.60 },
+      outlier: { mes: "Jul", churn_pct: 11.70 }
+    }
   }
 };
 
@@ -41,6 +54,7 @@ let currentLogoBase64 = '';
 const visibleSeries = {
   tnccUltra: true,
   tnccCobre: true,
+  churnFibra: true,
   instFibra: false,
   instCobre: false,
   retFibra: false,
@@ -84,6 +98,13 @@ function initDashboard() {
    POP UP DE BIENVENIDA Y MODAL DE AYUDA DE INDICADORES (i)
 ========================================================= */
 const INDICATOR_HELP_DATA = {
+  churn: {
+    badge: 'Tasa de Cancelación (Churn Rate)',
+    title: 'Tasa de Churn Fibra Óptica',
+    icon: 'user-minus',
+    color: '#f43f5e',
+    text: 'El Churn Rate mide el porcentaje de clientes que cancelan o se retiran del servicio respecto al promedio de la base activa en el período. Es el indicador por excelencia de pérdida de clientes y atrición, fundamental para evaluar la fidelidad y la estabilidad de la cartera de suscriptores.'
+  },
   tncc: {
     badge: '¿SABÍAS QUÉ?...',
     title: 'Tasa Neta de Crecimiento de Cartera (TNCC)',
@@ -220,6 +241,30 @@ function buildTrendChart() {
       pointHoverRadius: 7,
       yAxisID: 'yTncc',
       order: 2
+    });
+  }
+
+    // 3. Churn Fibra (%)
+  if (visibleSeries.churnFibra) {
+    const churnDataArr = f.churn || [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38];
+    datasets.push({
+      type: 'line',
+      label: 'Churn Fibra (%)',
+      data: churnDataArr,
+      borderColor: '#F43F5E',
+      backgroundColor: 'rgba(244, 63, 94, 0.10)',
+      fill: false,
+      tension: 0.25,
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointBackgroundColor: '#F43F5E',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointStyle: 'triangle',
+      yAxisID: 'yTncc',
+      order: 0
     });
   }
 
@@ -377,6 +422,18 @@ function buildTrendChart() {
       yAxisID: 'yTncc',
       order: 10
     });
+    } else if (currentBenchmark === 'avgChurn') {
+    datasets.push({
+      type: 'line',
+      label: 'Promedio Churn Fibra (2.11%)',
+      data: Array(months.length).fill(2.11),
+      borderColor: '#F43F5E',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
   } else if (currentBenchmark === 'avgUltra') {
     const avgF = Number(avgArr(f.tncc).toFixed(2));
     datasets.push({
@@ -464,7 +521,7 @@ function buildTrendChart() {
         yTncc: {
           type: 'linear',
           position: 'right',
-          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre,
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre || visibleSeries.churnFibra,
           grid: { color: 'rgba(255, 255, 255, 0.06)' },
           ticks: {
             color: '#00D2FF',
@@ -541,6 +598,7 @@ function toggleSeries(seriesKey) {
   visibleSeries[seriesKey] = !visibleSeries[seriesKey];
   const btnMap = {
     tnccUltra: 'toggleTnccUltra',
+    churnFibra: 'toggleChurnFibra',
     tnccCobre: 'toggleTnccCobre',
     instFibra: 'toggleInstFibra',
     instCobre: 'toggleInstCobre',
@@ -588,6 +646,7 @@ function switchView(view) {
     document.getElementById('btnViewCombinado').classList.add('active');
     visibleSeries.tnccUltra = true;
     visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = true;
     visibleSeries.instFibra = false;
     visibleSeries.instCobre = false;
     visibleSeries.retFibra = false;
@@ -599,6 +658,7 @@ function switchView(view) {
     document.getElementById('btnViewUltra').classList.add('active');
     visibleSeries.tnccUltra = true;
     visibleSeries.tnccCobre = false;
+    visibleSeries.churnFibra = true;
     visibleSeries.instFibra = true;
     visibleSeries.instCobre = false;
     visibleSeries.retFibra = true;
@@ -610,6 +670,7 @@ function switchView(view) {
     document.getElementById('btnViewCobre').classList.add('active');
     visibleSeries.tnccUltra = false;
     visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = false;
     visibleSeries.instFibra = false;
     visibleSeries.instCobre = true;
     visibleSeries.retFibra = false;
@@ -630,6 +691,7 @@ function switchView(view) {
 
   syncBtn('toggleTnccUltra', 'tnccUltra', 'TNCC Fibra %');
   syncBtn('toggleTnccCobre', 'tnccCobre', 'TNCC Cobre %');
+  syncBtn('toggleChurnFibra', 'churnFibra', 'Churn Fibra %');
   syncBtn('toggleInstFibra', 'instFibra', 'Instalaciones Fibra');
   syncBtn('toggleInstCobre', 'instCobre', 'Instalaciones Cobre');
   syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
@@ -744,6 +806,21 @@ function recalculateAndRenderDashboard() {
   const elBalDesc = document.getElementById('dispBalanceDesc');
   if (elBalDesc) {
     elBalDesc.innerHTML = `Aba Ultra alcanza un balance neto positivo de <strong>+${formatNum(balanceNetoF)} clientes</strong> (+${formatNum(totalInstF)} instalaciones vs. ${formatNum(totalRetF)} retiros). Más de <strong>${formatNum(mercadoPerdido)} clientes salieron</strong> del ecosistema de la empresa sin migrar.`;
+  }
+
+  
+  // 5. Actualizar Tarjeta 5: Tasa Churn Acumulado Año (Fibra)
+  const elChurnAcum = document.getElementById('dispChurnAcumUltra');
+  if (elChurnAcum) elChurnAcum.textContent = '22,38%';
+  const elChurnSub = document.getElementById('dispChurnSubUltra');
+  if (elChurnSub) elChurnSub.textContent = 'Retiros: 38.819 / Prom: 173.445';
+  const elChurnProm = document.getElementById('dispChurnPromUltra');
+  if (elChurnProm) elChurnProm.textContent = '2,11%';
+  const elChurnSinJulio = document.getElementById('dispChurnSinJulioUltra');
+  if (elChurnSinJulio) elChurnSinJulio.textContent = 'Sin Julio: 1,05%';
+  const elChurnDesc = document.getElementById('dispChurnDesc');
+  if (elChurnDesc) {
+    elChurnDesc.innerHTML = 'Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>0,23% a 2,60%</strong>). Afectado por el <strong>outlier de Julio (11,70%)</strong>. Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br><span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>';
   }
 
   // 7. Actualizar Insignias de la Leyenda Normativa
@@ -1438,6 +1515,30 @@ function buildTrendChart() {
     });
   }
 
+    // 3. Churn Fibra (%)
+  if (visibleSeries.churnFibra) {
+    const churnDataArr = f.churn || [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38];
+    datasets.push({
+      type: 'line',
+      label: 'Churn Fibra (%)',
+      data: churnDataArr,
+      borderColor: '#F43F5E',
+      backgroundColor: 'rgba(244, 63, 94, 0.10)',
+      fill: false,
+      tension: 0.25,
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointBackgroundColor: '#F43F5E',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointStyle: 'triangle',
+      yAxisID: 'yTncc',
+      order: 0
+    });
+  }
+
   // 3. Balance Neto Fibra
   if (visibleSeries.netFibra) {
     const netF = f.instalaciones.map((inst, i) => inst - (f.retiros[i] || 0));
@@ -1592,6 +1693,18 @@ function buildTrendChart() {
       yAxisID: 'yTncc',
       order: 10
     });
+    } else if (currentBenchmark === 'avgChurn') {
+    datasets.push({
+      type: 'line',
+      label: 'Promedio Churn Fibra (2.11%)',
+      data: Array(months.length).fill(2.11),
+      borderColor: '#F43F5E',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
   } else if (currentBenchmark === 'avgUltra') {
     const avgF = Number(avgArr(f.tncc).toFixed(2));
     datasets.push({
@@ -1677,7 +1790,7 @@ function buildTrendChart() {
         yTncc: {
           type: 'linear',
           position: 'right',
-          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre,
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre || visibleSeries.churnFibra,
           grid: { color: 'rgba(255, 255, 255, 0.06)' },
           ticks: {
             color: '#00D2FF',
