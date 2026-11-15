@@ -477,7 +477,8 @@ body {
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
+  gap: 16px;
+  align-items: stretch;
 }
 
 .kpi-card {
@@ -486,11 +487,10 @@ body {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border-glow);
   border-radius: 20px;
-  padding: 20px 22px;
+  padding: 18px 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   position: relative;
   overflow: hidden;
   min-width: 0;
@@ -606,12 +606,12 @@ body {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   background: rgba(8, 3, 32, 0.65);
-  padding: 12px 14px;
+  padding: 10px 10px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  margin: 8px 0;
+  margin: 6px 0;
   min-width: 0;
 }
 
@@ -656,7 +656,7 @@ body {
 
 /* Control estricto de desborde numérico */
 .big-stat-number {
-  font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
   font-weight: 800;
   font-family: var(--font-mono);
   line-height: 1.15;
@@ -689,7 +689,8 @@ body {
 }
 
 .kpi-dual-desc {
-  margin-top: 8px;
+  margin-top: auto;
+  padding-top: 6px;
 }
 
 .kpi-description {
@@ -2312,7 +2313,8 @@ body {
             Aba Ultra alcanza un balance neto positivo de <strong>+1.679 clientes</strong> (+40.498 instalaciones vs. 38.819 retiros). Más de <strong>414.000 clientes salieron</strong> del ecosistema de la empresa sin migrar.
           </p>
         </div>
-      
+      </article>
+
       <!-- Card 5: Tasa Churn Acumulado Año (Fibra) -->
       <article class="kpi-card churn-card">
         <div class="kpi-header">
