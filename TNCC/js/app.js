@@ -702,7 +702,11 @@ function recalculateAndRenderDashboard() {
   const factorRatio = (ratioEficienciaC > 0) ? Math.round(ratioEficienciaF / ratioEficienciaC) : 50;
   const elEficDesc = document.getElementById('dispEficienciaDesc');
   if (elEficDesc) {
-    elEficDesc.innerHTML = `Aba Ultra registra <strong>${instPor100F} instalaciones por cada 100 retiros</strong>, lo que refleja un déficit de reemplazo. En cambio, Aba Cobre solo instala <strong>${instPor100C} clientes por cada 100 retiros</strong>, evidenciando una desconexión ${factorRatio} veces superior.`;
+    if (ratioEficienciaF >= 1.0) {
+      elEficDesc.innerHTML = `Aba Ultra supera el punto de equilibrio registrando <strong>${instPor100F} instalaciones por cada 100 retiros (Ratio ${ratioEficienciaF.toFixed(2)})</strong>, logrando ganancia neta de cartera. En cambio, Aba Cobre solo instala <strong>${instPor100C} clientes por cada 100 retiros</strong>, evidenciando una desconexión ${factorRatio} veces superior.`;
+    } else {
+      elEficDesc.innerHTML = `Aba Ultra registra <strong>${instPor100F} instalaciones por cada 100 retiros (Ratio ${ratioEficienciaF.toFixed(2)})</strong>, lo que refleja un déficit de reemplazo. En cambio, Aba Cobre solo instala <strong>${instPor100C} clientes por cada 100 retiros</strong>, evidenciando una desconexión ${factorRatio} veces superior.`;
+    }
   }
 
   // 5. Actualizar Tarjeta 3: Cartera de Suscriptores
@@ -724,7 +728,10 @@ function recalculateAndRenderDashboard() {
 
   // 6. Actualizar Tarjeta 4: Balance de Flujos Netos
   const elBalUltra = document.getElementById('dispBalanceNetoUltra');
-  if (elBalUltra) elBalUltra.textContent = (balanceNetoF >= 0 ? '+' : '') + formatNum(balanceNetoF);
+  if (elBalUltra) {
+    elBalUltra.textContent = (balanceNetoF >= 0 ? '+' : '') + formatNum(balanceNetoF);
+    elBalUltra.style.color = (balanceNetoF >= 0 ? '#38bdf8' : '#fb7185');
+  }
   const elBalSubUltra = document.getElementById('dispBalanceSubUltra');
   if (elBalSubUltra) elBalSubUltra.textContent = `+${formatNum(totalInstF)} inst / -${formatNum(totalRetF)} ret`;
 
@@ -736,7 +743,7 @@ function recalculateAndRenderDashboard() {
   const mercadoPerdido = Math.abs(balanceNetoC) - balanceNetoF;
   const elBalDesc = document.getElementById('dispBalanceDesc');
   if (elBalDesc) {
-    elBalDesc.innerHTML = `Frente a los <strong>${formatNum(totalRetC)} retiros en cobre</strong>, la fibra sólo sumó ${formatNum(totalInstF)} instalaciones. Más de <strong>${formatNum(mercadoPerdido)} clientes salieron</strong> del ecosistema de la empresa sin migrar.`;
+    elBalDesc.innerHTML = `Aba Ultra alcanza un balance neto positivo de <strong>+${formatNum(balanceNetoF)} clientes</strong> (+${formatNum(totalInstF)} instalaciones vs. ${formatNum(totalRetF)} retiros). Más de <strong>${formatNum(mercadoPerdido)} clientes salieron</strong> del ecosistema de la empresa sin migrar.`;
   }
 
   // 7. Actualizar Insignias de la Leyenda Normativa
