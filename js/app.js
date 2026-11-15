@@ -820,7 +820,7 @@ function recalculateAndRenderDashboard() {
   if (elChurnSinJulio) elChurnSinJulio.textContent = 'Sin Julio: 1,05%';
   const elChurnDesc = document.getElementById('dispChurnDesc');
   if (elChurnDesc) {
-    elChurnDesc.innerHTML = 'Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>0,23% a 2,60%</strong>). Afectado por el <strong>outlier de Julio (11,70%)</strong>. Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br><span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>';
+    elChurnDesc.innerHTML = 'Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>1% a 3%</strong>). Afectado por la caída de Julio (<strong>11,70%</strong>). Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br><span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>';
   }
 
   // 7. Actualizar Insignias de la Leyenda Normativa

@@ -2354,7 +2354,7 @@ body {
 
         <div class="kpi-dual-desc">
           <p class="kpi-description" id="dispChurnDesc">
-            Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>0,23% a 2,60%</strong>). Afectado por el <strong>outlier de Julio (11,70%)</strong>. Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br>
+            Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>1% a 3%</strong>). Afectado por la caída de Julio (<strong>11,70%</strong>). Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br>
             <span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>
           </p>
         </div>
@@ -2942,7 +2942,7 @@ const telecomData = {
     "churnResumen": {
       "promedio_simple_ene_oct_pct": 2.11,
       "promedio_sin_julio_pct": 1.05,
-      "rango_sin_julio_pct": { "min": 0.23, "max": 2.60 },
+      "rango_sin_julio_pct": { "min": 1.00, "max": 3.00 },
       "outlier": { "mes": "Jul", "churn_pct": 11.70 }
     }
 }
@@ -3062,6 +3062,21 @@ function recalculateAndRenderDashboard() {
   const elBalDesc = document.getElementById('dispBalanceDesc');
   if (elBalDesc) {
     elBalDesc.innerHTML = 'Aba Ultra alcanza un balance neto positivo de <strong>+' + formatNum(balanceNetoF) + ' clientes</strong> (+' + formatNum(totalInstF) + ' instalaciones vs. ' + formatNum(totalRetF) + ' retiros). Más de <strong>' + formatNum(mercadoPerdido) + ' clientes salieron</strong> del ecosistema de la empresa sin migrar.';
+  }
+
+  
+  // Actualizar Tarjeta 5: Tasa Churn Acumulado Año (Fibra)
+  const elChurnAcum = document.getElementById('dispChurnAcumUltra');
+  if (elChurnAcum) elChurnAcum.textContent = '22,38%';
+  const elChurnSub = document.getElementById('dispChurnSubUltra');
+  if (elChurnSub) elChurnSub.textContent = 'Retiros: 38.819 / Prom: 173.445';
+  const elChurnProm = document.getElementById('dispChurnPromUltra');
+  if (elChurnProm) elChurnProm.textContent = '2,11%';
+  const elChurnSinJulio = document.getElementById('dispChurnSinJulioUltra');
+  if (elChurnSinJulio) elChurnSinJulio.textContent = 'Sin Julio: 1,05%';
+  const elChurnDesc = document.getElementById('dispChurnDesc');
+  if (elChurnDesc) {
+    elChurnDesc.innerHTML = 'Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>1% a 3%</strong>). Afectado por la caída de Julio (<strong>11,70%</strong>). Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.<br><span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-top: 4px;">* Nota: El acumulado corresponde al periodo ene-sep; no incluye octubre.</span>';
   }
 
   // 7. Actualizar Insignias de la Leyenda Normativa
