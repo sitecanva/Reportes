@@ -1140,15 +1140,18 @@ body {
 }
 
 .narrative-content {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  color: #cbd5e1;
   line-height: 1.6;
   font-family: var(--font-secondary);
+  margin: 0;
 }
 
 .narrative-content strong {
-  color: #fff;
+  color: #ffffff;
   font-weight: 600;
+  font-size: inherit;
+  font-family: inherit;
 }
 
 /* Cross Findings */
