@@ -1,0 +1,83 @@
+{
+  "indicadores_cobranza": {
+    "periodo": "Enero - Octubre",
+    "leyenda": {
+      "%RvF": "Métrica de Recaudación Total vs Facturación del mes",
+      "%RDA": "Recaudación sobre deuda acumulada/antigua",
+      "%RFM": "Recaudación sobre la factura del mes",
+      "%TR": "Tasa de Retorno de Cobranza"
+    },
+    "detalle_mensual": [
+      {
+        "mes": "Enero",
+        "tr": "70%",
+        "rda": "49%",
+        "rfm": "81%",
+        "rvf": "90%"
+      },
+      {
+        "mes": "Febrero",
+        "tr": "66%",
+        "rda": "46%",
+        "rfm": "79%",
+        "rvf": "92%"
+      },
+      {
+        "mes": "Marzo",
+        "tr": "69%",
+        "rda": "55%",
+        "rfm": "81%",
+        "rvf": "97%"
+      },
+      {
+        "mes": "Abril",
+        "tr": "72%",
+        "rda": "45%",
+        "rfm": "85%",
+        "rvf": "100%"
+      },
+      {
+        "mes": "Mayo",
+        "tr": "74%",
+        "rda": "50%",
+        "rfm": "88%",
+        "rvf": "104%"
+      },
+      {
+        "mes": "Junio",
+        "tr": "67%",
+        "rda": "51%",
+        "rfm": "77%",
+        "rvf": "91%"
+      },
+      {
+        "mes": "Julio",
+        "tr": "74%",
+        "rda": "58%",
+        "rfm": "82%",
+        "rvf": "100%"
+      },
+      {
+        "mes": "Agosto",
+        "tr": "76%",
+        "rda": "55%",
+        "rfm": "82%",
+        "rvf": "103%"
+      },
+      {
+        "mes": "Septiembre",
+        "tr": "74%",
+        "rda": "56%",
+        "rfm": "79%",
+        "rvf": "97%"
+      },
+      {
+        "mes": "Octubre",
+        "tr": "80%",
+        "rda": "64%",
+        "rfm": "82%",
+        "rvf": "101%"
+      }
+    ]
+  }
+}

@@ -1,0 +1,525 @@
+{
+  "datosPorProductos": {
+    "descripcion": "Registros históricos mensuales por año y producto (Aba Tradicional, Aba Ultra, Telefonía, Telefonía IP, TDH, Aba TV GO) con valores de Cartera, Instalaciones, Retiros, Cartera Neta y TNCC",
+    "anios": {
+      "2025": {
+        "Aba Tradicional": {
+          "Enero": {
+            "cartera": 1555120,
+            "instalaciones": 881,
+            "retiros": 14323,
+            "carteraNeta": 1541678,
+            "tncc": "-0,86%"
+          },
+          "Febrero": {
+            "cartera": 1540212,
+            "instalaciones": 1394,
+            "retiros": 36462,
+            "carteraNeta": 1505144,
+            "tncc": "-2,27%"
+          },
+          "Marzo": {
+            "cartera": 1509541,
+            "instalaciones": 1190,
+            "retiros": 9279,
+            "carteraNeta": 1501452,
+            "tncc": "-0,54%"
+          },
+          "Abril": {
+            "cartera": 1496467,
+            "instalaciones": 1191,
+            "retiros": 9029,
+            "carteraNeta": 1488629,
+            "tncc": "-0,52%"
+          },
+          "Mayo": {
+            "cartera": 1464244,
+            "instalaciones": 2437,
+            "retiros": 36591,
+            "carteraNeta": 1430090,
+            "tncc": "-2,29%"
+          },
+          "Junio": {
+            "cartera": 1449652,
+            "instalaciones": 926,
+            "retiros": 10537,
+            "carteraNeta": 1440041,
+            "tncc": "-0,67%"
+          },
+          "Julio": {
+            "cartera": 1424927,
+            "instalaciones": 939,
+            "retiros": 23707,
+            "carteraNeta": 1402159,
+            "tncc": "-1,58%"
+          },
+          "Agosto": {
+            "cartera": 1391838,
+            "instalaciones": 1201,
+            "retiros": 39555,
+            "carteraNeta": 1353484,
+            "tncc": "-2,74%"
+          },
+          "Septiembre": {
+            "cartera": 1360823,
+            "instalaciones": 935,
+            "retiros": 30197,
+            "carteraNeta": 1331562,
+            "tncc": "-2,16%"
+          },
+          "Octubre": {
+            "cartera": 1360824,
+            "instalaciones": 817,
+            "retiros": 455,
+            "carteraNeta": 1265264,
+            "tncc": "0,03%"
+          },
+          "Noviembre": {
+            "cartera": 1264902,
+            "instalaciones": 492,
+            "retiros": 0,
+            "carteraNeta": 1235757,
+            "tncc": "0,04%"
+          },
+          "Diciembre": {
+            "cartera": 1249146,
+            "instalaciones": 2,
+            "retiros": 13881,
+            "carteraNeta": 1235267,
+            "tncc": "-1,12%"
+          }
+        },
+        "Aba Ultra": {
+          "Enero": {
+            "cartera": 86700,
+            "instalaciones": 6287,
+            "retiros": 471,
+            "carteraNeta": 92516,
+            "tncc": "6,71%"
+          },
+          "Febrero": {
+            "cartera": 94353,
+            "instalaciones": 7124,
+            "retiros": 444,
+            "carteraNeta": 101033,
+            "tncc": "7,22%"
+          },
+          "Marzo": {
+            "cartera": 113352,
+            "instalaciones": 5698,
+            "retiros": 398,
+            "carteraNeta": 118652,
+            "tncc": "5,25%"
+          },
+          "Abril": {
+            "cartera": 113706,
+            "instalaciones": 5402,
+            "retiros": 203,
+            "carteraNeta": 118905,
+            "tncc": "0,34%"
+          },
+          "Mayo": {
+            "cartera": 108704,
+            "instalaciones": 8049,
+            "retiros": 984,
+            "carteraNeta": 115769,
+            "tncc": "5,94%"
+          },
+          "Junio": {
+            "cartera": 115587,
+            "instalaciones": 7846,
+            "retiros": 2465,
+            "carteraNeta": 120968,
+            "tncc": "4,65%"
+          },
+          "Julio": {
+            "cartera": 119127,
+            "instalaciones": 5889,
+            "retiros": 6218,
+            "carteraNeta": 118798,
+            "tncc": "-0,27%"
+          },
+          "Agosto": {
+            "cartera": 123985,
+            "instalaciones": 6082,
+            "retiros": 1584,
+            "carteraNeta": 128483,
+            "tncc": "3,79%"
+          },
+          "Septiembre": {
+            "cartera": 127878,
+            "instalaciones": 5555,
+            "retiros": 3511,
+            "carteraNeta": 129922,
+            "tncc": "1,59%"
+          },
+          "Octubre": {
+            "cartera": 128996,
+            "instalaciones": 11204,
+            "retiros": 1187,
+            "carteraNeta": 139013,
+            "tncc": "7,71%"
+          },
+          "Noviembre": {
+            "cartera": 136548,
+            "instalaciones": 9243,
+            "retiros": 497,
+            "carteraNeta": 145294,
+            "tncc": "6,29%"
+          },
+          "Diciembre": {
+            "cartera": 149648,
+            "instalaciones": 5631,
+            "retiros": 3453,
+            "carteraNeta": 151826,
+            "tncc": "1,50%"
+          }
+        },
+        "Telefonía": {
+          "Enero": {
+            "cartera": 1927236,
+            "instalaciones": 1111,
+            "retiros": 28878,
+            "carteraNeta": 1899469,
+            "tncc": "-1,44%"
+          },
+          "Febrero": {
+            "cartera": 1849573,
+            "instalaciones": 1880,
+            "retiros": 16587,
+            "carteraNeta": 1834866,
+            "tncc": "-0,77%"
+          },
+          "Marzo": {
+            "cartera": 1894835,
+            "instalaciones": 2222,
+            "retiros": 9270,
+            "carteraNeta": 1887787,
+            "tncc": "-0,38%"
+          },
+          "Abril": {
+            "cartera": 1885313,
+            "instalaciones": 2133,
+            "retiros": 349,
+            "carteraNeta": 1887097,
+            "tncc": "0,09%"
+          },
+          "Mayo": {
+            "cartera": 1832939,
+            "instalaciones": 1536,
+            "retiros": 44539,
+            "carteraNeta": 1789936,
+            "tncc": "-2,28%"
+          },
+          "Junio": {
+            "cartera": 1833109,
+            "instalaciones": 769,
+            "retiros": 15411,
+            "carteraNeta": 1818467,
+            "tncc": "-0,82%"
+          },
+          "Julio": {
+            "cartera": 1796181,
+            "instalaciones": 882,
+            "retiros": 32049,
+            "carteraNeta": 1765014,
+            "tncc": "-1,71%"
+          },
+          "Agosto": {
+            "cartera": 1721191,
+            "instalaciones": 1131,
+            "retiros": 86490,
+            "carteraNeta": 1635832,
+            "tncc": "-4,84%"
+          },
+          "Septiembre": {
+            "cartera": 1683983,
+            "instalaciones": 1060,
+            "retiros": 39101,
+            "carteraNeta": 1632165,
+            "tncc": "-2,33%"
+          },
+          "Octubre": {
+            "cartera": 1633938,
+            "instalaciones": 1471,
+            "retiros": 3244,
+            "carteraNeta": 1538896,
+            "tncc": "-0,11%"
+          },
+          "Noviembre": {
+            "cartera": 1540669,
+            "instalaciones": 1227,
+            "retiros": 0,
+            "carteraNeta": 1519708,
+            "tncc": "0,08%"
+          },
+          "Diciembre": {
+            "cartera": 1518481,
+            "instalaciones": 993,
+            "retiros": 21765,
+            "carteraNeta": 1497709,
+            "tncc": "-1,37%"
+          }
+        },
+        "Telefonía IP": {
+          "Enero": {
+            "cartera": 5698,
+            "instalaciones": 0,
+            "retiros": 0,
+            "carteraNeta": 5698,
+            "tncc": "0,00%"
+          },
+          "Febrero": {
+            "cartera": 6926,
+            "instalaciones": 2299,
+            "retiros": 0,
+            "carteraNeta": 9225,
+            "tncc": "40,35%"
+          },
+          "Marzo": {
+            "cartera": 12138,
+            "instalaciones": 3050,
+            "retiros": 0,
+            "carteraNeta": 15188,
+            "tncc": "33,06%"
+          },
+          "Abril": {
+            "cartera": 12264,
+            "instalaciones": 2402,
+            "retiros": 0,
+            "carteraNeta": 14666,
+            "tncc": "15,82%"
+          },
+          "Mayo": {
+            "cartera": 12358,
+            "instalaciones": 2146,
+            "retiros": 0,
+            "carteraNeta": 14504,
+            "tncc": "14,63%"
+          },
+          "Junio": {
+            "cartera": 14262,
+            "instalaciones": 3156,
+            "retiros": 0,
+            "carteraNeta": 17418,
+            "tncc": "21,76%"
+          },
+          "Julio": {
+            "cartera": 19949,
+            "instalaciones": 4319,
+            "retiros": 0,
+            "carteraNeta": 24268,
+            "tncc": "24,80%"
+          },
+          "Agosto": {
+            "cartera": 24723,
+            "instalaciones": 4376,
+            "retiros": 0,
+            "carteraNeta": 29099,
+            "tncc": "18,03%"
+          },
+          "Septiembre": {
+            "cartera": 28324,
+            "instalaciones": 3244,
+            "retiros": 0,
+            "carteraNeta": 31568,
+            "tncc": "11,15%"
+          },
+          "Octubre": {
+            "cartera": 31448,
+            "instalaciones": 6219,
+            "retiros": 0,
+            "carteraNeta": 37667,
+            "tncc": "19,70%"
+          },
+          "Noviembre": {
+            "cartera": 37650,
+            "instalaciones": 6099,
+            "retiros": 0,
+            "carteraNeta": 43749,
+            "tncc": "16,19%"
+          },
+          "Diciembre": {
+            "cartera": 43604,
+            "instalaciones": 3928,
+            "retiros": 0,
+            "carteraNeta": 47532,
+            "tncc": "8,98%"
+          }
+        },
+        "TDH": {
+          "Enero": {
+            "cartera": 23537,
+            "instalaciones": 667,
+            "retiros": 0,
+            "carteraNeta": 24204,
+            "tncc": "2,83%"
+          },
+          "Febrero": {
+            "cartera": 41032,
+            "instalaciones": 1410,
+            "retiros": 0,
+            "carteraNeta": 42442,
+            "tncc": "5,83%"
+          },
+          "Marzo": {
+            "cartera": 40859,
+            "instalaciones": 131,
+            "retiros": 0,
+            "carteraNeta": 40990,
+            "tncc": "0,31%"
+          },
+          "Abril": {
+            "cartera": 40349,
+            "instalaciones": 402,
+            "retiros": 0,
+            "carteraNeta": 40751,
+            "tncc": "0,98%"
+          },
+          "Mayo": {
+            "cartera": 41374,
+            "instalaciones": 401,
+            "retiros": 0,
+            "carteraNeta": 41775,
+            "tncc": "0,98%"
+          },
+          "Junio": {
+            "cartera": 30794,
+            "instalaciones": 369,
+            "retiros": 0,
+            "carteraNeta": 31163,
+            "tncc": "0,88%"
+          },
+          "Julio": {
+            "cartera": 33039,
+            "instalaciones": 716,
+            "retiros": 0,
+            "carteraNeta": 33755,
+            "tncc": "2,30%"
+          },
+          "Agosto": {
+            "cartera": 31157,
+            "instalaciones": 408,
+            "retiros": 0,
+            "carteraNeta": 31565,
+            "tncc": "1,21%"
+          },
+          "Septiembre": {
+            "cartera": 30183,
+            "instalaciones": 347,
+            "retiros": 0,
+            "carteraNeta": 30530,
+            "tncc": "1,10%"
+          },
+          "Octubre": {
+            "cartera": 31757,
+            "instalaciones": 342,
+            "retiros": 0,
+            "carteraNeta": 32099,
+            "tncc": "1,12%"
+          },
+          "Noviembre": {
+            "cartera": 32292,
+            "instalaciones": 259,
+            "retiros": 0,
+            "carteraNeta": 32551,
+            "tncc": "0,81%"
+          },
+          "Diciembre": {
+            "cartera": 30302,
+            "instalaciones": 242,
+            "retiros": 0,
+            "carteraNeta": 30544,
+            "tncc": "0,74%"
+          }
+        },
+        "Aba TV GO": {
+          "Enero": {
+            "cartera": 3239,
+            "instalaciones": 13209,
+            "retiros": 0,
+            "carteraNeta": 16448,
+            "tncc": "407,81%"
+          },
+          "Febrero": {
+            "cartera": 22088,
+            "instalaciones": 8414,
+            "retiros": 0,
+            "carteraNeta": 30502,
+            "tncc": "51,16%"
+          },
+          "Marzo": {
+            "cartera": 22095,
+            "instalaciones": 3071,
+            "retiros": 0,
+            "carteraNeta": 25166,
+            "tncc": "10,07%"
+          },
+          "Abril": {
+            "cartera": 23123,
+            "instalaciones": 2864,
+            "retiros": 0,
+            "carteraNeta": 25987,
+            "tncc": "11,38%"
+          },
+          "Mayo": {
+            "cartera": 24143,
+            "instalaciones": 5508,
+            "retiros": 0,
+            "carteraNeta": 29651,
+            "tncc": "21,20%"
+          },
+          "Junio": {
+            "cartera": 29946,
+            "instalaciones": 1128,
+            "retiros": 0,
+            "carteraNeta": 31074,
+            "tncc": "3,80%"
+          },
+          "Julio": {
+            "cartera": 30263,
+            "instalaciones": 4075,
+            "retiros": 0,
+            "carteraNeta": 34338,
+            "tncc": "13,11%"
+          },
+          "Agosto": {
+            "cartera": 31085,
+            "instalaciones": 2156,
+            "retiros": 0,
+            "carteraNeta": 33241,
+            "tncc": "6,28%"
+          },
+          "Septiembre": {
+            "cartera": 33211,
+            "instalaciones": 1705,
+            "retiros": 0,
+            "carteraNeta": 34916,
+            "tncc": "5,13%"
+          },
+          "Octubre": {
+            "cartera": 32112,
+            "instalaciones": 2907,
+            "retiros": 0,
+            "carteraNeta": 35019,
+            "tncc": "8,33%"
+          },
+          "Noviembre": {
+            "cartera": 37678,
+            "instalaciones": 4332,
+            "retiros": 0,
+            "carteraNeta": 42010,
+            "tncc": "12,37%"
+          },
+          "Diciembre": {
+            "cartera": 42851,
+            "instalaciones": 3250,
+            "retiros": 0,
+            "carteraNeta": 46101,
+            "tncc": "7,74%"
+          }
+        }
+      }
+    }
+  }
+}

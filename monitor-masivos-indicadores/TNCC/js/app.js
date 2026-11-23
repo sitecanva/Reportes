@@ -1,0 +1,2092 @@
+/**
+ * Dashboard Combinado Cobre & Fibra - TNCC Analytics Studio
+ * Mercados Masivos / Monitoreo TNCC
+ */
+
+// Repositorio de datos oficiales para ambas tecnologías
+const telecomData = {
+  cobre: {
+    name: 'Aba Cobre',
+    type: 'cobre',
+    color: '#FF8C42',
+    colorAlpha: 'rgba(255, 140, 66, 0.85)',
+    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
+    carteraInicio: [1517643, 1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265],
+    carteraCierre: [1481858, 1387054, 1342155, 1303926, 1263474, 1213285, 1173060, 1152689, 1131265, 1160781],
+    instalaciones: [1195, 1112, 1114, 910, 869, 803, 623, 650, 656, 952],
+    retiros: [36980, 95916, 46013, 39139, 41321, 50992, 40848, 21021, 22080, 30468],
+    tncc: [-2.36, -6.40, -3.24, -2.85, -3.10, -3.97, -3.32, -1.74, -1.86, -2.53]
+  },
+  fibra: {
+    name: 'Aba Ultra (Fibra)',
+    type: 'fibra',
+    color: '#00D2FF',
+    colorAlpha: 'rgba(0, 210, 255, 0.85)',
+    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct'],
+    carteraInicio: [175609, 178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577],
+    carteraCierre: [178841, 182313, 182798, 183266, 187997, 193589, 173624, 174833, 174577, 171866],
+    instalaciones: [3926, 4333, 3028, 884, 5346, 6056, 2406, 5288, 4157, 5074],
+    retiros: [694, 861, 2543, 416, 615, 464, 22371, 4079, 4413, 2363],
+    tncc: [1.84, 1.94, 0.27, 0.26, 2.58, 2.97, -10.31, 0.70, -0.15, 1.56],
+    churn: [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38],
+    churnAcumuladoAnio: {
+      retiro: 38819,
+      prom_cartera: 173445,
+      churn_acumulado_pct: 22.38
+    },
+    churnResumen: {
+      promedio_simple_ene_oct_pct: 2.11,
+      promedio_sin_julio_pct: 1.05,
+      rango_sin_julio_pct: { min: 1.00, max: 3.00 },
+      outlier: { mes: "Jul", churn_pct: 11.70 }
+    }
+  }
+};
+
+let currentView = 'combinado';
+let currentBenchmark = 'thresholds';
+let trendChartInstance = null;
+let currentLogoBase64 = '';
+
+// Banderas de visibilidad de series en el gráfico principal de Evolución
+// Vista combinada predeterminada: sólo TNCC Fibra y TNCC Cobre
+const visibleSeries = {
+  tnccUltra: true,
+  tnccCobre: true,
+  churnFibra: true,
+  instFibra: false,
+  instCobre: false,
+  retFibra: false,
+  retCobre: false,
+  netFibra: false,
+  carteraFibra: false,
+  carteraCobre: false
+};
+
+// Funciones utilitarias
+const formatNum = n => new Intl.NumberFormat('de-DE').format(Math.round(n));
+const formatPct = n => (n >= 0 ? '+' : '') + n.toFixed(2).replace('.', ',') + '%';
+const sumArr = arr => arr.reduce((a, b) => a + b, 0);
+const avgArr = arr => arr.reduce((a, b) => a + b, 0) / (arr.length || 1);
+
+// Inicialización de componentes al cargar el DOM
+function initDashboard() {
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  // Pre-cargar Data URL del logo para exportación offline
+  fetch('img/logo-base64.txt')
+    .then(r => r.text())
+    .then(t => {
+      if (t && t.startsWith('data:')) {
+        currentLogoBase64 = t.trim();
+      }
+    })
+    .catch(() => {});
+
+  setupEditorEvents();
+  recalculateAndRenderDashboard();
+
+  // Mostrar automáticamente el popup de bienvenida al ingresar
+  setTimeout(() => {
+    openWelcomePopup();
+  }, 350);
+}
+
+/* =========================================================
+   POP UP DE BIENVENIDA Y MODAL DE AYUDA DE INDICADORES (i)
+========================================================= */
+const INDICATOR_HELP_DATA = {
+  churn: {
+    badge: 'Tasa de Cancelación (Churn Rate)',
+    title: 'Tasa de Churn Fibra Óptica',
+    icon: 'user-minus',
+    color: '#f43f5e',
+    text: 'El Churn Rate mide el porcentaje de clientes que cancelan o se retiran del servicio respecto al promedio de la base activa en el período. Es el indicador por excelencia de pérdida de clientes y atrición, fundamental para evaluar la fidelidad y la estabilidad de la cartera de suscriptores.'
+  },
+  tncc: {
+    badge: '¿SABÍAS QUÉ?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNCC)',
+    icon: 'trending-up',
+    color: '#00D2FF',
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNCC): Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+  },
+  eficiencia: {
+    badge: 'Eficiencia Comercial',
+    title: 'Instalación vs. Retiro',
+    icon: 'scale',
+    color: '#10b981',
+    text: 'Indica cuántos clientes nuevos entran a la empresa por cada cliente que decide retirarse. Es un indicador directo de la capacidad de reemplazo del equipo de ventas.'
+  },
+  cartera: {
+    badge: 'Cartera de Suscriptores',
+    title: 'Cartera de Suscriptores',
+    icon: 'users',
+    color: '#3b82f6',
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con la cartera inicial, reflejando el balance global y el ritmo de retención o contracción de la cartera de abonados.'
+  },
+  balance: {
+    badge: 'Balance de Flujos Netos',
+    title: 'Balance de Flujos Netos',
+    icon: 'arrow-left-right',
+    color: '#c084fc',
+    text: 'Es el resultado neto definitivo en cartera de clientes (+Instalaciones - Retiros); refleja si al final del período la empresa quedó con más o menos hogares conectados tras comparar todas las instalaciones contra todas los retiros'
+  }
+};
+
+function openIndicatorHelp(indicatorKey) {
+  const data = INDICATOR_HELP_DATA[indicatorKey];
+  if (!data) return;
+
+  const titleEl = document.getElementById('indicatorHelpTitle');
+  const bodyEl = document.getElementById('indicatorHelpBody');
+  const badgeEl = document.getElementById('indicatorHelpBadge');
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (bodyEl) bodyEl.innerHTML = `<p>${data.text}</p>`;
+  if (badgeEl) {
+    badgeEl.innerHTML = `<i data-lucide="${data.icon}" style="width:14px;height:14px;color:${data.color}"></i> <span style="color:${data.color}">${data.badge}</span>`;
+  }
+
+  openCustomModal('indicatorHelpModal');
+}
+
+function openWelcomePopup() {
+  openCustomModal('welcomeModal');
+}
+
+function openCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'flex';
+  modal.classList.add('active');
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function closeCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.style.display = 'none';
+}
+
+function handleCustomModalOverlayClick(e, modalId) {
+  if (e.target === e.currentTarget || e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+    closeCustomModal(modalId);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' || e.key === 'Esc') {
+    closeCustomModal('welcomeModal');
+    closeCustomModal('indicatorHelpModal');
+  }
+});
+
+/**
+ * Gráfico Principal: Evolución Mensual de TNCC
+ * Incorpora: TNCC %, Instalaciones, Retiros, Balance Neto Fibra, Cartera Fibra y Cartera Cobre
+ */
+function buildTrendChart() {
+  const canvasEl = document.getElementById('trendChartCanvas');
+  if (!canvasEl) return;
+  const ctx = canvasEl.getContext('2d');
+  if (trendChartInstance) trendChartInstance.destroy();
+
+  const f = telecomData.fibra;
+  const c = telecomData.cobre;
+  const months = f.months;
+
+  const datasets = [];
+
+  // 1. TNCC Fibra (%)
+  if (visibleSeries.tnccUltra) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Ultra (%)',
+      data: f.tncc,
+      borderColor: '#00D2FF',
+      backgroundColor: 'rgba(0, 210, 255, 0.12)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#00D2FF',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 1
+    });
+  }
+
+  // 2. TNCC Cobre (%)
+  if (visibleSeries.tnccCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Cobre (%)',
+      data: c.tncc,
+      borderColor: '#FF8C42',
+      backgroundColor: 'rgba(255, 140, 66, 0.08)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#FF8C42',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 2
+    });
+  }
+
+    // 3. Churn Fibra (%)
+  if (visibleSeries.churnFibra) {
+    const churnDataArr = f.churn || [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38];
+    datasets.push({
+      type: 'line',
+      label: 'Churn Fibra (%)',
+      data: churnDataArr,
+      borderColor: '#F43F5E',
+      backgroundColor: 'rgba(244, 63, 94, 0.10)',
+      fill: false,
+      tension: 0.25,
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointBackgroundColor: '#F43F5E',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointStyle: 'triangle',
+      yAxisID: 'yTncc',
+      order: 0
+    });
+  }
+
+  // 3. Curva de Balance Neto Fibra (Línea Azul Eléctrico)
+  if (visibleSeries.netFibra) {
+    const netF = f.instalaciones.map((inst, i) => inst - (f.retiros[i] || 0));
+    datasets.push({
+      type: 'line',
+      label: 'Balance Neto Fibra',
+      data: netF,
+      borderColor: '#38BDF8',
+      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+      borderWidth: 2.5,
+      tension: 0.2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#38BDF8',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      yAxisID: 'yFlujos',
+      order: 3
+    });
+  }
+
+  // 4. Curva Cartera Fibra (Línea Púrpura Discontinua)
+  if (visibleSeries.carteraFibra) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Cierre Fibra (Líneas)',
+      data: f.carteraCierre || f.carteraInicio,
+      borderColor: '#C084FC',
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#C084FC',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraFibra',
+      order: 4
+    });
+  }
+
+  // 5. Curva Cartera Cobre (Línea Ámbar Discontinua)
+  if (visibleSeries.carteraCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Cierre Cobre (Líneas)',
+      data: c.carteraCierre || c.carteraInicio,
+      borderColor: '#FBBF24',
+      borderWidth: 2.5,
+      borderDash: [6, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#FBBF24',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraCobre',
+      order: 5
+    });
+  }
+
+  // 6. Instalaciones Fibra (Barras Verdes Esmeralda)
+  if (visibleSeries.instFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Fibra',
+      data: f.instalaciones,
+      backgroundColor: 'rgba(16, 185, 129, 0.75)',
+      borderColor: '#10B981',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 6
+    });
+  }
+
+  // 7. Instalaciones Cobre (Barras Turquesa)
+  if (visibleSeries.instCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Cobre',
+      data: c.instalaciones,
+      backgroundColor: 'rgba(20, 184, 166, 0.7)',
+      borderColor: '#14b8a6',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 7
+    });
+  }
+
+  // 8. Retiros Fibra (Barras Rosa)
+  if (visibleSeries.retFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Fibra',
+      data: f.retiros,
+      backgroundColor: 'rgba(244, 63, 94, 0.7)',
+      borderColor: '#f43f5e',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 8
+    });
+  }
+
+  // 9. Retiros Cobre (Barras Rojo Carmesí)
+  if (visibleSeries.retCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Cobre',
+      data: c.retiros,
+      backgroundColor: 'rgba(225, 29, 72, 0.65)',
+      borderColor: '#e11d48',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 9
+    });
+  }
+
+  // Guías y Líneas de Benchmark
+  if (currentBenchmark === 'thresholds') {
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Excelente (+2.0%)',
+      data: Array(months.length).fill(2.0),
+      borderColor: 'rgba(16, 185, 129, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Saludable (+0.5%)',
+      data: Array(months.length).fill(0.5),
+      borderColor: 'rgba(0, 210, 255, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.4)',
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    } else if (currentBenchmark === 'avgChurn') {
+    datasets.push({
+      type: 'line',
+      label: 'Promedio Churn Fibra (2.11%)',
+      data: Array(months.length).fill(2.11),
+      borderColor: '#F43F5E',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgUltra') {
+    const avgF = Number(avgArr(f.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: `Promedio TNCC Fibra (${formatPct(avgF)})`,
+      data: Array(months.length).fill(avgF),
+      borderColor: '#00D2FF',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgCobre') {
+    const avgC = Number(avgArr(c.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: `Promedio TNCC Cobre (${formatPct(avgC)})`,
+      data: Array(months.length).fill(avgC),
+      borderColor: '#FF8C42',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'zero') {
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.5)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    data: {
+      labels: months,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(10, 6, 32, 0.95)',
+          borderColor: 'rgba(0, 210, 255, 0.4)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#e2e8f0',
+          padding: 12,
+          titleFont: { size: 13, weight: 'bold', family: 'Outfit' },
+          bodyFont: { size: 12, family: 'JetBrains Mono' },
+          boxPadding: 4,
+          callbacks: {
+            label: function(context) {
+              let l = context.dataset.label || '';
+              if (l) l += ': ';
+              if (context.dataset.yAxisID === 'yTncc') {
+                l += context.parsed.y.toFixed(2) + '%';
+              } else {
+                l += formatNum(context.parsed.y);
+              }
+              return l;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255, 255, 255, 0.08)' },
+          ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+        },
+        yTncc: {
+          type: 'linear',
+          position: 'right',
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre || visibleSeries.churnFibra,
+          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          ticks: {
+            color: '#00D2FF',
+            font: { family: 'JetBrains Mono', size: 11 },
+            callback: v => v.toFixed(1) + '%'
+          },
+          title: {
+            display: true,
+            text: 'TNCC Porcentual (%)',
+            color: '#00D2FF',
+            font: { family: 'Outfit', size: 11, weight: 'bold' }
+          }
+        },
+        yFlujos: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.instFibra || visibleSeries.instCobre || visibleSeries.retFibra || visibleSeries.retCobre || visibleSeries.netFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#cbd5e1',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v >= 1000 || v <= -1000) ? (v/1000).toFixed(0) + 'k' : v
+          },
+          title: {
+            display: true,
+            text: 'Flujos (Instalaciones / Retiros / Balance)',
+            color: '#cbd5e1',
+            font: { family: 'Outfit', size: 11 }
+          }
+        },
+        yCarteraFibra: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#C084FC',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000).toFixed(0) + 'k'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Cierre Fibra',
+            color: '#C084FC',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        },
+        yCarteraCobre: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraCobre,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#FBBF24',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000000).toFixed(2) + 'M'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Cierre Cobre',
+            color: '#FBBF24',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Toggle individual de series en el gráfico principal
+ */
+function toggleSeries(seriesKey) {
+  visibleSeries[seriesKey] = !visibleSeries[seriesKey];
+  const btnMap = {
+    tnccUltra: 'toggleTnccUltra',
+    churnFibra: 'toggleChurnFibra',
+    tnccCobre: 'toggleTnccCobre',
+    instFibra: 'toggleInstFibra',
+    instCobre: 'toggleInstCobre',
+    retFibra: 'toggleRetFibra',
+    retCobre: 'toggleRetCobre',
+    netFibra: 'toggleNetFibra',
+    carteraFibra: 'toggleCarteraFibra',
+    carteraCobre: 'toggleCarteraCobre'
+  };
+  const btn = document.getElementById(btnMap[seriesKey]);
+  if (btn) {
+    if (visibleSeries[seriesKey]) {
+      btn.classList.add('active');
+      btn.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = '<i data-lucide="eye" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    }
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+  buildTrendChart();
+}
+
+/**
+ * Cambio de línea guía / benchmark
+ */
+function changeBenchmark() {
+  currentBenchmark = document.getElementById('selectBenchmark').value;
+  buildTrendChart();
+}
+
+/**
+ * Cambio de vista general integrada (Combinado, Fibra, Cobre)
+ */
+function switchView(view) {
+  currentView = view;
+  ['btnViewCombinado', 'btnViewUltra', 'btnViewCobre'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+
+  if (view === 'combinado') {
+    document.getElementById('btnViewCombinado').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = true;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'fibra') {
+    document.getElementById('btnViewUltra').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = false;
+    visibleSeries.churnFibra = true;
+    visibleSeries.instFibra = true;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = true;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false; // Desmarcado por defecto según requerimiento
+    visibleSeries.carteraFibra = true;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'cobre') {
+    document.getElementById('btnViewCobre').classList.add('active');
+    visibleSeries.tnccUltra = false;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.churnFibra = false;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = true;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = true;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = true;
+  }
+
+  // Sincronizar estado visual de botones de toggle
+  const syncBtn = (id, key, label) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('active', visibleSeries[key]);
+    const icon = visibleSeries[key] ? 'check' : 'eye';
+    el.innerHTML = `<i data-lucide="${icon}" style="width:12px;height:12px;"></i> ${label}`;
+  };
+
+  syncBtn('toggleTnccUltra', 'tnccUltra', 'TNCC Fibra %');
+  syncBtn('toggleTnccCobre', 'tnccCobre', 'TNCC Cobre %');
+  syncBtn('toggleChurnFibra', 'churnFibra', 'Churn Fibra %');
+  syncBtn('toggleInstFibra', 'instFibra', 'Instalaciones Fibra');
+  syncBtn('toggleInstCobre', 'instCobre', 'Instalaciones Cobre');
+  syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
+  syncBtn('toggleRetCobre', 'retCobre', 'Retiros Cobre');
+  syncBtn('toggleNetFibra', 'netFibra', 'Balance Neto Fibra');
+  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Cierre Fibra');
+  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cierre Cobre');
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+
+  buildTrendChart();
+}
+
+/**
+ * RECALCULA Y ACTUALIZA TODAS LAS MÉTRICAS, TARJETAS, TEXTOS Y NARRATIVAS
+ */
+function recalculateAndRenderDashboard() {
+  const f = telecomData.fibra;
+  const c = telecomData.cobre;
+
+  // 1. Cálculos de Fibra (Aba Ultra)
+  const totalInstF = sumArr(f.instalaciones);
+  const totalRetF = sumArr(f.retiros);
+  const balanceNetoF = totalInstF - totalRetF;
+  const carteraInicioF = f.carteraInicio[0] || 1;
+  const carteraFinalF = (f.carteraCierre && f.carteraCierre.length) ? f.carteraCierre[f.carteraCierre.length - 1] : 171866;
+  const varCarteraF = carteraFinalF - carteraInicioF;
+  const tnccAcumF = (balanceNetoF / carteraInicioF) * 100;
+  const avgTnccF = avgArr(f.tncc);
+  const ratioEficienciaF = totalRetF > 0 ? (totalInstF / totalRetF) : 1;
+
+  // 2. Cálculos de Cobre (Aba Cobre)
+  const totalInstC = sumArr(c.instalaciones);
+  const totalRetC = sumArr(c.retiros);
+  const balanceNetoC = totalInstC - totalRetC;
+  const carteraInicioC = c.carteraInicio[0] || 1;
+  const carteraFinalC = (c.carteraCierre && c.carteraCierre.length) ? c.carteraCierre[c.carteraCierre.length - 1] : 1160781;
+  const varCarteraC = carteraFinalC - carteraInicioC;
+  const pctVarCarteraC = ((carteraFinalC - carteraInicioC) / carteraInicioC) * 100;
+  const tnccAcumC = (balanceNetoC / carteraInicioC) * 100;
+  const avgTnccC = avgArr(c.tncc);
+  const ratioEficienciaC = totalRetC > 0 ? (totalInstC / totalRetC) : 0;
+
+  // 3. Actualizar Tarjeta 1: TNCC Acumulado
+  const elTnccUltra = document.getElementById('dispTnccValueUltra');
+  if (elTnccUltra) elTnccUltra.textContent = formatPct(tnccAcumF);
+  const elTnccSubUltra = document.getElementById('dispTnccSubUltra');
+  if (elTnccSubUltra) elTnccSubUltra.textContent = `Prom: ${formatPct(avgTnccF)}/mes`;
+
+  const elTnccCobre = document.getElementById('dispTnccValueCobre');
+  if (elTnccCobre) elTnccCobre.textContent = formatPct(tnccAcumC);
+  const elTnccSubCobre = document.getElementById('dispTnccSubCobre');
+  if (elTnccSubCobre) elTnccSubCobre.textContent = `Prom: ${formatPct(avgTnccC)}/mes`;
+
+  // 4. Actualizar Tarjeta 2: Eficiencia Comercial (Instalación vs. Retiro)
+  const elEficUltra = document.getElementById('dispEficienciaUltra');
+  if (elEficUltra) elEficUltra.textContent = ratioEficienciaF.toFixed(2);
+  const elEficSubUltra = document.getElementById('dispEficienciaSubUltra');
+  if (elEficSubUltra) elEficSubUltra.textContent = `${formatNum(totalInstF)} / ${formatNum(totalRetF)}`;
+
+  const elEficCobre = document.getElementById('dispEficienciaCobre');
+  if (elEficCobre) elEficCobre.textContent = ratioEficienciaC.toFixed(2);
+  const elEficSubCobre = document.getElementById('dispEficienciaSubCobre');
+  if (elEficSubCobre) elEficSubCobre.textContent = `${formatNum(totalInstC)} / ${formatNum(totalRetC)}`;
+
+  const instPor100F = Math.round(ratioEficienciaF * 100);
+  const instPor100C = Math.round(ratioEficienciaC * 100);
+  const factorRatio = (ratioEficienciaC > 0) ? Math.round(ratioEficienciaF / ratioEficienciaC) : 50;
+  const elEficDesc = document.getElementById('dispEficienciaDesc');
+  if (elEficDesc) {
+    if (ratioEficienciaF >= 1.0) {
+      elEficDesc.innerHTML = `Aba Ultra supera el punto de equilibrio registrando <strong>${instPor100F} instalaciones por cada 100 retiros (Ratio ${ratioEficienciaF.toFixed(2)})</strong>, logrando ganancia neta de cartera. En cambio, Aba Cobre solo instala <strong>${instPor100C} clientes por cada 100 retiros</strong>, evidenciando una desconexión ${factorRatio} veces superior.`;
+    } else {
+      elEficDesc.innerHTML = `Aba Ultra registra <strong>${instPor100F} instalaciones por cada 100 retiros (Ratio ${ratioEficienciaF.toFixed(2)})</strong>, lo que refleja un déficit de reemplazo. En cambio, Aba Cobre solo instala <strong>${instPor100C} clientes por cada 100 retiros</strong>, evidenciando una desconexión ${factorRatio} veces superior.`;
+    }
+  }
+
+  // 5. Actualizar Tarjeta 3: Cartera de Suscriptores
+  const elCarteraUltra = document.getElementById('dispCarteraUltra');
+  if (elCarteraUltra) elCarteraUltra.textContent = formatNum(carteraFinalF);
+  const elCarteraSubUltra = document.getElementById('dispCarteraSubUltra');
+  if (elCarteraSubUltra) elCarteraSubUltra.textContent = `Inicio: ${formatNum(carteraInicioF)} (${varCarteraF >= 0 ? '+' : ''}${formatNum(varCarteraF)})`;
+
+  const elCarteraCobre = document.getElementById('dispCarteraCobre');
+  if (elCarteraCobre) elCarteraCobre.textContent = formatNum(carteraFinalC);
+  const varK = Math.round(varCarteraC / 1000);
+  const elCarteraSubCobre = document.getElementById('dispCarteraSubCobre');
+  if (elCarteraSubCobre) elCarteraSubCobre.textContent = `Inicio: ${formatNum(carteraInicioC)} (${varK}k)`;
+
+  const elCarteraDesc = document.getElementById('dispCarteraDesc');
+  if (elCarteraDesc) {
+    elCarteraDesc.innerHTML = `Cobre reduce su cartera en <strong>${formatPct(pctVarCarteraC)}</strong> (${formatNum(varCarteraC)} cuentas). La fibra óptica amortigua parte de la migración, cerrando octubre en ${formatNum(carteraFinalF)} suscriptores.`;
+  }
+
+  // 6. Actualizar Tarjeta 4: Balance de Flujos Netos
+  const elBalUltra = document.getElementById('dispBalanceNetoUltra');
+  if (elBalUltra) {
+    elBalUltra.textContent = (balanceNetoF >= 0 ? '+' : '') + formatNum(balanceNetoF);
+    elBalUltra.style.color = (balanceNetoF >= 0 ? '#38bdf8' : '#fb7185');
+  }
+  const elBalSubUltra = document.getElementById('dispBalanceSubUltra');
+  if (elBalSubUltra) elBalSubUltra.textContent = `+${formatNum(totalInstF)} inst / -${formatNum(totalRetF)} ret`;
+
+  const elBalCobre = document.getElementById('dispBalanceNetoCobre');
+  if (elBalCobre) elBalCobre.textContent = formatNum(balanceNetoC);
+  const elBalSubCobre = document.getElementById('dispBalanceSubCobre');
+  if (elBalSubCobre) elBalSubCobre.textContent = `+${formatNum(totalInstC)} inst / -${formatNum(totalRetC)} ret`;
+
+  const mercadoPerdido = Math.abs(balanceNetoC) - balanceNetoF;
+  const elBalDesc = document.getElementById('dispBalanceDesc');
+  if (elBalDesc) {
+    elBalDesc.innerHTML = `Aba Ultra alcanza un balance neto positivo de <strong>+${formatNum(balanceNetoF)} clientes</strong> (+${formatNum(totalInstF)} instalaciones vs. ${formatNum(totalRetF)} retiros). Más de <strong>${formatNum(mercadoPerdido)} clientes salieron</strong> del ecosistema de la empresa sin migrar.`;
+  }
+
+  
+  // 5. Actualizar Tarjeta 5: Tasa Churn Acumulado Año (Fibra)
+  const elChurnAcum = document.getElementById('dispChurnAcumUltra');
+  if (elChurnAcum) elChurnAcum.textContent = '22,38%';
+  const elChurnSub = document.getElementById('dispChurnSubUltra');
+  if (elChurnSub) elChurnSub.textContent = 'Retiros: 38.819 / Prom: 173.445';
+  const elChurnProm = document.getElementById('dispChurnPromUltra');
+  if (elChurnProm) elChurnProm.textContent = '2,11%';
+  const elChurnSinJulio = document.getElementById('dispChurnSinJulioUltra');
+  if (elChurnSinJulio) elChurnSinJulio.textContent = 'Sin Julio: 1,05%';
+  const elChurnDesc = document.getElementById('dispChurnDesc');
+  if (elChurnDesc) {
+    elChurnDesc.innerHTML = 'Promedio mensual de <strong>2,11%</strong> (rango típico: <strong>1% a 3%</strong>). Afectado por la caída de Julio (<strong>11,70%</strong>). Sin julio, la tasa promedio desciende a <strong>1,05%</strong>.';
+  }
+
+  // 7. Actualizar Insignias de la Leyenda Normativa
+  const elBadgeUltra = document.getElementById('legendBadgeUltra');
+  if (elBadgeUltra) elBadgeUltra.textContent = `TNCC Global: ${formatPct(tnccAcumF)}`;
+  const elBadgeCobre = document.getElementById('legendBadgeCobre');
+  if (elBadgeCobre) elBadgeCobre.textContent = `TNCC Acum: ${formatPct(tnccAcumC)}`;
+
+  // 8. Resumen Ejecutivo Autogenerado en Tiempo Real
+  const periodoTxt = document.getElementById('dispPeriodo') ? document.getElementById('dispPeriodo').textContent.trim() : 'el período evaluado';
+
+  const elNarrativeUltra = document.getElementById('narrativeUltraText');
+  if (elNarrativeUltra) {
+    const estadoNormativoUltra = tnccAcumF > 2.0 ? 'Excelente' : (tnccAcumF >= 0.6 ? 'Saludable' : 'Muy lento o estancado');
+    const pctVarCarteraF = ((carteraFinalF - carteraInicioF) / carteraInicioF) * 100;
+    elNarrativeUltra.innerHTML = `Para el período evaluado (${periodoTxt}), la cartera de <strong>Aba Ultra</strong> registró una captación comercial acumulada de <strong>${formatNum(totalInstF)} instalaciones</strong> frente a <strong>${formatNum(totalRetF)} retiros</strong>, generando un balance neto de flujos positivo de <strong>+${formatNum(balanceNetoF)} cuentas</strong> y una ratio de reemplazo de <strong>${ratioEficienciaF.toFixed(2)}</strong> (104 altas por cada 100 bajas). Esto sitúa la Tasa Neta de Crecimiento de Cartera en <strong>${formatPct(tnccAcumF)} acumulado</strong> (promedio mensual de ${formatPct(avgTnccF)}), posicionando formalmente a la tecnología en el cuadrante <strong>"${estadoNormativoUltra}"</strong> de la Matriz Normativa.<br><br>
+    <strong>Evolución de cartera (Ene-Oct):</strong> Inició en <strong>${formatNum(carteraInicioF)} suscriptores</strong> y creció con fuerza en el primer semestre (+10,24%) hasta su pico récord en junio con <strong>193.589 clientes</strong>. El shock extraordinario de <strong>22.371 retiros en julio</strong> (-10,31% TNCC) redujo la base a 173.624 cuentas, para luego estabilizarse hacia octubre (5.074 instalaciones y balance neto de +2.711), cerrando el período en <strong>${formatNum(carteraFinalF)} suscriptores</strong> (${formatPct(pctVarCarteraF)} vs. enero). El ciclo valida una alta demanda comercial pero exige blindar la base activa para capitalizar la migración del cobre.`;
+  }
+
+  const elNarrativeCobre = document.getElementById('narrativeCobreText');
+  if (elNarrativeCobre) {
+    const avgInstC = Math.round(totalInstC / (c.instalaciones.length || 1));
+    const avgRetC = Math.round(totalRetC / (c.retiros.length || 1));
+    elNarrativeCobre.innerHTML = `En cuanto a la tecnología <strong>Aba Cobre</strong>, se contabilizaron <strong>${formatNum(totalInstC)} instalaciones</strong> y <strong>${formatNum(totalRetC)} retiros</strong>, totalizando una contracción de cartera de <strong>${formatPct(pctVarCarteraC)}</strong> (${formatNum(varCarteraC)} líneas netas) y un TNCC acumulado de <strong>${formatPct(tnccAcumC)}</strong> (promedio mensual de ${formatPct(avgTnccC)}), ubicándose con consistencia en el cuadrante <strong>"Muy lento o estancado"</strong>.<br><br>
+    Este comportamiento responde a la <strong>política corporativa deliberada de vaciado y apagado de centrales de cobre obsoletas</strong> (promedio de ${formatNum(avgInstC)} instalaciones/mes frente a ${formatNum(avgRetC)} retiros/mes). El desafío crítico reside en canalizar este flujo saliente hacia la fibra propia antes de que abandonen la empresa.`;
+  }
+
+  
+  // 9. Actualización Dinámica de la Matriz de Criterios (Leyenda Normativa)
+  const legendRowsUltra = ['rowBajaUltra', 'rowModeradaUltra', 'rowAltaUltra'];
+  legendRowsUltra.forEach(id => {
+    const r = document.getElementById(id);
+    if (r) {
+      r.classList.remove('active-row-baja', 'active-row-moderada', 'active-row-alta');
+      const oldBadge = r.querySelector('.legend-badge.ultra');
+      if (oldBadge) oldBadge.remove();
+    }
+  });
+
+  let activeRowUltraId = 'rowBajaUltra';
+  let activeClassUltra = 'active-row-baja';
+  let iconNameUltra = 'alert-triangle';
+
+  if (tnccAcumF > 2.0) {
+    activeRowUltraId = 'rowAltaUltra';
+    activeClassUltra = 'active-row-alta';
+    iconNameUltra = 'zap';
+  } else if (tnccAcumF >= 0.5) {
+    activeRowUltraId = 'rowModeradaUltra';
+    activeClassUltra = 'active-row-moderada';
+    iconNameUltra = 'check';
+  }
+
+  const activeRowUltra = document.getElementById(activeRowUltraId);
+  if (activeRowUltra) {
+    activeRowUltra.classList.add(activeClassUltra);
+    const cellRange = activeRowUltra.querySelector('.range-status-col');
+    if (cellRange) {
+      const badgeSpan = document.createElement('span');
+      badgeSpan.className = 'legend-badge ultra';
+      badgeSpan.innerHTML = '<i data-lucide="' + iconNameUltra + '" style="width:10px;height:10px;display:inline;"></i> Ultra: ' + formatPct(tnccAcumF);
+      cellRange.appendChild(badgeSpan);
+    }
+  }
+
+  // Descripciones actualizadas de la matriz
+  const descBajaUltra = document.querySelector('#rowBajaUltra .desc');
+  if (descBajaUltra) {
+    descBajaUltra.innerHTML = '<strong>Rendimiento débil.</strong> Requiere ajustes comerciales inmediatos y planes de retención proactiva.';
+  }
+  const descModUltra = document.querySelector('#rowModeradaUltra .desc');
+  if (descModUltra) {
+    descModUltra.innerHTML = 'La empresa está expandiendo su cartera de manera constante. El negocio mantiene una trayectoria positiva, situando la base de cierre de octubre en ' + formatNum(carteraFinalF) + ' suscriptores.';
+  }
+
+  const descBajaCobre = document.querySelector('#rowBajaCobre .desc');
+  if (descBajaCobre) {
+    descBajaCobre.innerHTML = 'Contracción crítica continua por apagado de red legada. Cobre acumula ' + formatNum(totalRetC) + ' retiros y sitúa su cartera de cierre en ' + formatNum(carteraFinalC) + ' líneas activas.';
+  }
+
+  // 10. Actualización Automática de Hallazgos Cruzados e Interacción Tecnológica
+  // Cruce 1: Retiro de Planta Cobre
+  const crossPillCobre = document.getElementById('crossPillCobre');
+  if (crossPillCobre) crossPillCobre.textContent = (varCarteraC >= 0 ? '+' : '') + Math.round(varCarteraC / 1000) + 'k Líneas';
+  const crossDescCobre = document.getElementById('crossDescCobre');
+  if (crossDescCobre) {
+    const avgInstC = Math.round(totalInstC / (c.instalaciones.length || 1));
+    crossDescCobre.innerHTML = 'La empresa no busca sostener el cobre: la contracción acumulada del <strong>' + formatPct(pctVarCarteraC) + '</strong> (de ' + (carteraInicioC / 1000000).toFixed(2) + 'M a ' + (carteraFinalC / 1000000).toFixed(2) + 'M abonados) y las reducidas instalaciones (promedio ' + formatNum(avgInstC) + '/mes) responden a la <strong>política deliberada de vaciado y retiro de la planta obsoleta</strong>.';
+  }
+
+  // Cruce 2: Diagnóstico Matriz: Fibra
+  const crossTitleFibra = document.getElementById('crossTitleFibra');
+  if (crossTitleFibra) crossTitleFibra.style.color = (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185');
+  const crossPillFibra = document.getElementById('crossPillFibra');
+  if (crossPillFibra) {
+    crossPillFibra.textContent = 'TNCC: ' + formatPct(tnccAcumF);
+    crossPillFibra.style.color = (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185');
+    crossPillFibra.style.background = (tnccAcumF >= 0.5 ? 'rgba(56, 189, 248, 0.2)' : 'rgba(244, 63, 94, 0.2)');
+  }
+  const crossDescFibra = document.getElementById('crossDescFibra');
+  if (crossDescFibra) {
+    if (tnccAcumF >= 0.5) {
+      crossDescFibra.innerHTML = 'Bajo la <strong>Leyenda Normativa</strong>, el rango de 0.6% a 2% califica como <em>"Saludable (crecimiento constante)"</em>. Al arrojar un TNCC acumulado de <strong>' + formatPct(tnccAcumF) + '</strong> y un balance neto positivo (+' + formatNum(balanceNetoF) + '), <strong>la fibra retoma una trayectoria de reemplazo positivo</strong>.';
+    } else {
+      crossDescFibra.innerHTML = 'Bajo la <strong>Leyenda Normativa</strong>, rangos de 0% a 0.5% señalan <em>"Muy lento o estancado (rendimiento débil)"</em>. Al arrojar un TNCC acumulado de <strong>' + formatPct(tnccAcumF) + '</strong>, <strong>el crecimiento de Fibra requiere ajustes comerciales inmediatos</strong>.';
+    }
+  }
+  const crossFooterFibra = document.getElementById('crossFooterFibra');
+  if (crossFooterFibra) {
+    crossFooterFibra.innerHTML = 'Dictamen normativo: <strong style="color: ' + (tnccAcumF >= 0.5 ? '#38bdf8' : '#fb7185') + ';">' + (tnccAcumF >= 0.5 ? 'Ritmo saludable de captación' : 'Exige ajustes comerciales inmediatos') + '</strong>.';
+  }
+
+  // Cruce 3: Fuga Fuera de la Empresa
+  const pctAbsorcion = totalRetC > 0 ? ((totalInstF / totalRetC) * 100) : 0;
+  const crossPillFuga = document.getElementById('crossPillFuga');
+  if (crossPillFuga) crossPillFuga.textContent = pctAbsorcion.toFixed(1) + '% Absorción';
+  const crossDescFuga = document.getElementById('crossDescFuga');
+  if (crossDescFuga) {
+    const pctFuga = Math.max(0, 100 - pctAbsorcion).toFixed(0);
+    crossDescFuga.innerHTML = 'Frente a los <strong>' + formatNum(totalRetC) + ' retiros en cobre</strong>, la fibra sumó <strong>' + formatNum(totalInstF) + ' instalaciones</strong>. Más del <strong>' + pctFuga + '% de los abonados retirados</strong> en cobre no migraron a la fibra propia, saliendo del ecosistema de la empresa.';
+  }
+  const crossFooterFuga = document.getElementById('crossFooterFuga');
+  if (crossFooterFuga) {
+    const fugaTotal = Math.max(0, totalRetC - totalInstF);
+    crossFooterFuga.innerHTML = 'Fuga neta de mercado: <strong style="color: #fbbf24;">' + formatNum(fugaTotal) + ' usuarios perdidos para la empresa</strong>.';
+  }
+
+  // Cruce 4: Blindaje Requerido en FTTH
+  const crossPillBlindaje = document.getElementById('crossPillBlindaje');
+  if (crossPillBlindaje) crossPillBlindaje.textContent = 'Ratio: ' + ratioEficienciaF.toFixed(2);
+  const crossDescBlindaje = document.getElementById('crossDescBlindaje');
+  if (crossDescBlindaje) {
+    crossDescBlindaje.innerHTML = 'La cartera de fibra adquirió <strong>' + formatNum(totalInstF) + ' clientes</strong> frente a <strong>' + formatNum(totalRetF) + ' retiros propios</strong>, arrojando un balance neto definitivo de <strong>' + (balanceNetoF >= 0 ? '+' : '') + formatNum(balanceNetoF) + ' cuentas</strong>. Se requiere sincronizar la desconexión de cobre con la instalación de fibra y blindar la base activa (' + formatNum(carteraFinalF) + ' suscriptores) para maximizar la retención.';
+  }
+  const crossFooterBlindaje = document.getElementById('crossFooterBlindaje');
+  if (crossFooterBlindaje) {
+    crossFooterBlindaje.innerHTML = 'Meta estratégica: <strong style="color: #34d399;">Migración sin churn ni desenganche</strong>.';
+  }
+
+  // Re-render del gráfico
+  buildTrendChart();
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * GESTIÓN DEL MODAL Y EDITOR DE MÉTRICAS
+ */
+function openMetricsEditor() {
+  const modal = document.getElementById('metricsEditorModal');
+  if (!modal) return;
+
+  // Cargar metadatos actuales en los campos
+  const tituloEl = document.getElementById('dispTituloReporte');
+  if (tituloEl) document.getElementById('inputEditTitulo').value = tituloEl.textContent.trim();
+
+  const contextEl = document.getElementById('dispHeaderContext');
+  if (contextEl) document.getElementById('inputEditContexto').value = contextEl.textContent.trim();
+
+  const periodoEl = document.getElementById('dispPeriodo');
+  if (periodoEl) document.getElementById('inputEditPeriodo').value = periodoEl.textContent.trim();
+
+  const anioBtn = document.getElementById('dispAnioBtn');
+  if (anioBtn) document.getElementById('inputEditAnio').value = anioBtn.textContent.trim();
+
+  const cicloLabel = document.getElementById('dispCicloLabel');
+  if (cicloLabel) document.getElementById('inputEditCiclo').value = cicloLabel.textContent.trim();
+
+  const yearSec = document.getElementById('yearFilterSection');
+  if (yearSec) document.getElementById('checkMostrarAnio').checked = (yearSec.style.display !== 'none');
+
+  const marcaEl = document.getElementById('dispFooterMarca');
+  if (marcaEl) document.getElementById('inputEditMarca').value = marcaEl.textContent.trim();
+
+  const subEl = document.getElementById('dispFooterSubtitulo');
+  if (subEl) document.getElementById('inputEditSubtitulo').value = subEl.textContent.trim();
+
+  const elabEl = document.getElementById('dispFooterElaborado');
+  if (elabEl) document.getElementById('inputEditElaborado').value = elabEl.textContent.trim();
+
+  const fuenteEl = document.getElementById('dispFooterFuente');
+  if (fuenteEl) document.getElementById('inputEditFuente').value = fuenteEl.textContent.trim();
+
+  const fechaEl = document.getElementById('dispFooterFecha');
+  if (fechaEl) document.getElementById('inputEditFecha').value = fechaEl.textContent.trim();
+
+  loadCurrentDataToEditor();
+  modal.classList.add('open');
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeMetricsEditor() {
+  const modal = document.getElementById('metricsEditorModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function switchEditorTab(tabKey) {
+  ['data', 'titles', 'footer'].forEach(k => {
+    const pane = document.getElementById(`paneTab-${k}`);
+    const btn = document.getElementById(`tabBtn${k.charAt(0).toUpperCase() + k.slice(1)}`);
+    if (pane) pane.classList.toggle('active', k === tabKey);
+    if (btn) btn.classList.toggle('active', k === tabKey);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Formatea los datos de telecomData a formato tabular TSV
+ */
+function loadCurrentDataToEditor() {
+  const f = telecomData.fibra;
+  const c = telecomData.cobre;
+  let text = "Mes\tCartera_Fibra\tInst_Fibra\tRet_Fibra\tTNCC_Fibra%\tCartera_Cobre\tInst_Cobre\tRet_Cobre\tTNCC_Cobre%\n";
+
+  f.months.forEach((m, i) => {
+    text += `${m}\t${f.carteraInicio[i]}\t${f.instalaciones[i]}\t${f.retiros[i]}\t${f.tncc[i]}\t${c.carteraInicio[i]}\t${c.instalaciones[i]}\t${c.retiros[i]}\t${c.tncc[i]}\n`;
+  });
+
+  const textarea = document.getElementById('editorDataText');
+  if (textarea) textarea.value = text;
+  setEditorStatus(`Datos actuales cargados (${f.months.length} meses).`, false);
+}
+
+function loadSampleCsvData() {
+  const sample = `Mes,Cartera_Fibra,Inst_Fibra,Ret_Fibra,TNCC_Fibra%,Cartera_Cobre,Inst_Cobre,Ret_Cobre,TNCC_Cobre%
+Ene,175609,3926,694,1.84,1517643,1195,36980,-2.36
+Feb,178841,4333,861,1.94,1481858,1112,95916,-6.40
+Mar,182313,3028,2546,0.26,1387054,1114,46013,-3.24
+Abr,182795,884,417,0.26,1342155,910,39139,-2.85
+May,183262,5346,614,2.58,1303926,869,41321,-3.10
+Jun,187994,6056,465,2.97,1263474,803,50992,-3.97
+Jul,193585,2406,22371,-10.31,1213285,623,40848,-3.32
+Ago,173620,5288,4079,0.70,1173060,650,21021,-1.74
+Sept,174833,4157,4413,-0.15,1152689,656,22080,-1.86
+Oct,174577,5074,2363,1.56,1131265,952,30468,-2.53`;
+  const textarea = document.getElementById('editorDataText');
+  if (textarea) textarea.value = sample;
+  setEditorStatus("Plantilla de ejemplo cargada.", false);
+}
+
+function setEditorStatus(msg, isError = false) {
+  const el = document.getElementById('editorStatusText');
+  if (el) {
+    el.textContent = msg;
+    el.style.color = isError ? '#fb7185' : '#00D2FF';
+  }
+}
+
+/**
+ * CONFIGURACIÓN DE EVENTOS DE ARRASTRE, SOLTADO Y PORTAPAPELES (DRAG & DROP / PASTE)
+ */
+function setupEditorEvents() {
+  const dropzone = document.getElementById('editorDropzone');
+  if (dropzone) {
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        processUploadedFile(files[0]);
+      }
+    });
+  }
+
+  // Pegado directo con Ctrl + V
+  window.addEventListener('paste', e => {
+    const modal = document.getElementById('metricsEditorModal');
+    if (!modal || !modal.classList.contains('open')) return;
+
+    // Si hay un archivo o imagen en el clipboard
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let index in items) {
+      const item = items[index];
+      if (item.kind === 'file') {
+        const blob = item.getAsFile();
+        if (blob) {
+          processUploadedFile(blob);
+          return;
+        }
+      }
+    }
+
+    // Si es texto tabular y el foco no está en un input
+    if (document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+      const text = e.clipboardData.getData('text');
+      if (text && text.trim().length > 10) {
+        const textarea = document.getElementById('editorDataText');
+        if (textarea) {
+          textarea.value = text;
+          setEditorStatus("Texto de tabla pegado exitosamente del portapapeles.", false);
+        }
+      }
+    }
+  });
+}
+
+function handleFileInputChange(event) {
+  const file = event.target.files[0];
+  if (file) {
+    processUploadedFile(file);
+  }
+}
+
+function processUploadedFile(file) {
+  const fileName = file.name ? file.name.toLowerCase() : '';
+  const fileType = file.type || '';
+
+  // 1. Imagen (PNG, JPG, JPEG)
+  if (fileType.startsWith('image/') || fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentLogoBase64 = e.target.result;
+      const previewBox = document.getElementById('editorImagePreviewBox');
+      const previewThumb = document.getElementById('editorImagePreviewThumb');
+      if (previewBox && previewThumb) {
+        previewThumb.src = currentLogoBase64;
+        previewBox.style.display = 'flex';
+      }
+      setEditorStatus(`Imagen cargada (${file.name || 'desde portapapeles'}). Haz clic en "Usar como Logo iPulso" si deseas aplicarla.`, false);
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  // 2. Archivo Excel (.xlsx / .xls)
+  if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileType.includes('spreadsheet') || fileType.includes('excel')) {
+    if (typeof XLSX === 'undefined') {
+      setEditorStatus("Librería SheetJS cargando... Reintenta en un momento.", true);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const csvText = XLSX.utils.sheet_to_csv(worksheet);
+        const textarea = document.getElementById('editorDataText');
+        if (textarea) textarea.value = csvText;
+        setEditorStatus(`Archivo Excel "${file.name}" leído exitosamente.`, false);
+      } catch (err) {
+        setEditorStatus("Error al leer archivo Excel: " + err.message, true);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
+
+  // 3. Archivo de Texto / CSV (.txt / .csv)
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const textarea = document.getElementById('editorDataText');
+    if (textarea) textarea.value = text;
+    setEditorStatus(`Archivo de texto "${file.name}" cargado exitosamente.`, false);
+  };
+  reader.readAsText(file);
+}
+
+function setUploadedImageAsLogo() {
+  if (!currentLogoBase64) return;
+  const logoImg = document.getElementById('headerLogoImg');
+  if (logoImg) {
+    logoImg.src = currentLogoBase64;
+    setEditorStatus("¡Logotipo de cabecera iPulso actualizado!", false);
+  }
+}
+
+/**
+ * Parseador inteligente de tabla en texto (CSV, TSV, valores separados por espacio o coma)
+ */
+function parseTextDataToTelecomData(rawText) {
+  if (!rawText || !rawText.trim()) return null;
+
+  const lines = rawText.trim().split(/\r?\n/).filter(line => line.trim().length > 0);
+  if (lines.length < 2) return null;
+
+  // Detectar separador común
+  const headerLine = lines[0];
+  let sep = '\t';
+  if (headerLine.includes('\t')) sep = '\t';
+  else if (headerLine.includes(';')) sep = ';';
+  else if (headerLine.includes(',')) sep = ',';
+
+  // Si la primera línea tiene encabezados, comenzamos desde la línea 1
+  let startIndex = 0;
+  if (/mes|month|cartera|fibra|cobre/i.test(lines[0])) {
+    startIndex = 1;
+  }
+
+  const parsedMonths = [];
+  const parsedCarteraF = [];
+  const parsedInstF = [];
+  const parsedRetF = [];
+  const parsedTnccF = [];
+  const parsedCarteraC = [];
+  const parsedInstC = [];
+  const parsedRetC = [];
+  const parsedTnccC = [];
+
+  for (let i = startIndex; i < lines.length; i++) {
+    const row = lines[i].split(sep).map(col => col.trim().replace(/^["']|["']$/g, ''));
+    if (row.length < 4) continue;
+
+    const mes = row[0] || `M${i}`;
+    const cleanNum = v => Number(String(v || '0').replace(/\./g, '').replace(',', '.'));
+
+    const cF = cleanNum(row[1]);
+    const iF = cleanNum(row[2]);
+    const rF = cleanNum(row[3]);
+    let tF = cleanNum(row[4]);
+    if (isNaN(tF) || row.length <= 4) {
+      tF = cF > 0 ? Number((((iF - rF) / cF) * 100).toFixed(2)) : 0;
+    }
+
+    const cC = cleanNum(row[5] || row[1]);
+    const iC = cleanNum(row[6] || row[2]);
+    const rC = cleanNum(row[7] || row[3]);
+    let tC = cleanNum(row[8]);
+    if (isNaN(tC) || row.length <= 8) {
+      tC = cC > 0 ? Number((((iC - rC) / cC) * 100).toFixed(2)) : 0;
+    }
+
+    parsedMonths.push(mes);
+    parsedCarteraF.push(cF);
+    parsedInstF.push(iF);
+    parsedRetF.push(rF);
+    parsedTnccF.push(tF);
+
+    parsedCarteraC.push(cC);
+    parsedInstC.push(iC);
+    parsedRetC.push(rC);
+    parsedTnccC.push(tC);
+  }
+
+  if (parsedMonths.length === 0) return null;
+
+  return {
+    months: parsedMonths,
+    fibra: {
+      carteraInicio: parsedCarteraF,
+      instalaciones: parsedInstF,
+      retiros: parsedRetF,
+      tncc: parsedTnccF
+    },
+    cobre: {
+      carteraInicio: parsedCarteraC,
+      instalaciones: parsedInstC,
+      retiros: parsedRetC,
+      tncc: parsedTnccC
+    }
+  };
+}
+
+/**
+ * APLICAR TODOS LOS CAMBIOS DESDE EL MODAL AL REPORTE EN TIEMPO REAL
+ */
+function applyMetricsEditorChanges() {
+  // 1. Parsear datos tabulares si el usuario los editó
+  const textarea = document.getElementById('editorDataText');
+  if (textarea && textarea.value.trim().length > 0) {
+    const parsed = parseTextDataToTelecomData(textarea.value);
+    if (parsed) {
+      telecomData.fibra.months = parsed.months;
+      telecomData.cobre.months = parsed.months;
+
+      telecomData.fibra.carteraInicio = parsed.fibra.carteraInicio;
+      telecomData.fibra.instalaciones = parsed.fibra.instalaciones;
+      telecomData.fibra.retiros = parsed.fibra.retiros;
+      telecomData.fibra.tncc = parsed.fibra.tncc;
+
+      telecomData.cobre.carteraInicio = parsed.cobre.carteraInicio;
+      telecomData.cobre.instalaciones = parsed.cobre.instalaciones;
+      telecomData.cobre.retiros = parsed.cobre.retiros;
+      telecomData.cobre.tncc = parsed.cobre.tncc;
+    }
+  }
+
+  // 2. Metadatos de Cabecera y Títulos
+  const inputTitulo = document.getElementById('inputEditTitulo');
+  if (inputTitulo && inputTitulo.value.trim()) {
+    const t = inputTitulo.value.trim();
+    document.title = t;
+    const dispTit = document.getElementById('dispTituloReporte');
+    if (dispTit) dispTit.textContent = t;
+  }
+
+  const inputContexto = document.getElementById('inputEditContexto');
+  if (inputContexto) {
+    const dispCtx = document.getElementById('dispHeaderContext');
+    const periodoVal = document.getElementById('inputEditPeriodo') ? document.getElementById('inputEditPeriodo').value.trim() : 'el período evaluado';
+    if (dispCtx) {
+      dispCtx.innerHTML = `${inputContexto.value.trim()} <strong id="dispPeriodo">${periodoVal}</strong>.`;
+    }
+  }
+
+  const inputPeriodo = document.getElementById('inputEditPeriodo');
+  if (inputPeriodo) {
+    const dispPer = document.getElementById('dispPeriodo');
+    if (dispPer) dispPer.textContent = inputPeriodo.value.trim();
+  }
+
+  // 3. Año Fiscal y Ciclo
+  const checkMostrarAnio = document.getElementById('checkMostrarAnio');
+  const yearSec = document.getElementById('yearFilterSection');
+  if (yearSec && checkMostrarAnio) {
+    yearSec.style.display = checkMostrarAnio.checked ? 'flex' : 'none';
+  }
+
+  const inputAnio = document.getElementById('inputEditAnio');
+  if (inputAnio) {
+    const dispAnio = document.getElementById('dispAnioBtn');
+    if (dispAnio) dispAnio.textContent = inputAnio.value.trim();
+  }
+
+  const inputCiclo = document.getElementById('inputEditCiclo');
+  if (inputCiclo) {
+    const dispCiclo = document.getElementById('dispCicloLabel');
+    if (dispCiclo) dispCiclo.textContent = inputCiclo.value.trim();
+  }
+
+  // 4. Pie de Página
+  const inputMarca = document.getElementById('inputEditMarca');
+  if (inputMarca) {
+    const el = document.getElementById('dispFooterMarca');
+    if (el) el.textContent = inputMarca.value.trim();
+  }
+
+  const inputSub = document.getElementById('inputEditSubtitulo');
+  if (inputSub) {
+    const el = document.getElementById('dispFooterSubtitulo');
+    if (el) el.textContent = inputSub.value.trim();
+  }
+
+  const inputElab = document.getElementById('inputEditElaborado');
+  if (inputElab) {
+    const el = document.getElementById('dispFooterElaborado');
+    if (el) el.textContent = inputElab.value.trim();
+  }
+
+  const inputFuente = document.getElementById('inputEditFuente');
+  if (inputFuente) {
+    const el = document.getElementById('dispFooterFuente');
+    if (el) el.textContent = inputFuente.value.trim();
+  }
+
+  const inputFecha = document.getElementById('inputEditFecha');
+  if (inputFecha) {
+    const el = document.getElementById('dispFooterFecha');
+    if (el) el.textContent = inputFecha.value.trim();
+  }
+
+  // 5. Recalcular todo el dashboard y cerrar modal
+  recalculateAndRenderDashboard();
+  closeMetricsEditor();
+}
+
+/**
+ * DESCARGA DE REPORTE HTML INDEPENDIENTE (SIN EL PANEL EXTERNO NI MODALES)
+ * Genera un archivo HTML 100% portable y autónomo con estilos CSS, scripts e imágenes embebidos en línea.
+ * Cero dependencias de archivos externos o servidores locales: abre en cualquier navegador de forma idéntica.
+ */
+function downloadStandaloneReport() {
+  const clone = document.documentElement.cloneNode(true);
+
+  // 1. Elimina el panel de control externo del estudio
+  const studioPanel = clone.querySelector('#externalStudioPanel');
+  if (studioPanel) studioPanel.remove();
+
+  // 2. Elimina el modal de edición
+  const modal = clone.querySelector('#metricsEditorModal');
+  if (modal) modal.remove();
+
+  // 3. Elimina la etiqueta de script de embedded-assets para no duplicar
+  const assetsScript = clone.querySelector('script[src*="embedded-assets.js"]');
+  if (assetsScript) assetsScript.remove();
+
+  // 4. Inyecta el CSS completo en una etiqueta <style> dentro de <head>
+  const linkCss = clone.querySelector('link[href*="styles.css"]');
+  const styleTag = clone.ownerDocument.createElement('style');
+  const cssContent = (typeof EMBEDDED_STYLESHEET !== 'undefined') ? EMBEDDED_STYLESHEET : '';
+  styleTag.textContent = cssContent;
+  if (linkCss) {
+    linkCss.parentNode.replaceChild(styleTag, linkCss);
+  } else {
+    clone.querySelector('head').appendChild(styleTag);
+  }
+
+  // 5. Garantiza que el logo esté incrustado directamente como Data URL en Base64
+  const logoImg = clone.querySelector('#headerLogoImg');
+  if (logoImg) {
+    const logoSrc = (typeof EMBEDDED_LOGO_DATA_URL !== 'undefined') ? EMBEDDED_LOGO_DATA_URL : currentLogoBase64;
+    if (logoSrc) {
+      logoImg.src = logoSrc;
+      logoImg.removeAttribute('onerror');
+    }
+  }
+
+  // 6. Serializa el estado actual de datos y series
+  const dataBlock = JSON.stringify(telecomData, null, 2);
+  const seriesBlock = JSON.stringify(visibleSeries, null, 2);
+  const viewBlock = JSON.stringify(currentView);
+  const benchBlock = JSON.stringify(currentBenchmark);
+
+  // 7. Genera el script de interactividad para el reporte standalone
+  const standaloneScriptContent = `
+// Standalone Telecom Data & State
+const telecomData = ${dataBlock};
+let currentView = ${viewBlock};
+let currentBenchmark = ${benchBlock};
+let trendChartInstance = null;
+const visibleSeries = ${seriesBlock};
+
+const formatNum = n => new Intl.NumberFormat('de-DE').format(Math.round(n));
+const formatPct = n => (n >= 0 ? '+' : '') + n.toFixed(2).replace('.', ',') + '%';
+const sumArr = arr => arr.reduce((a, b) => a + b, 0);
+const avgArr = arr => arr.reduce((a, b) => a + b, 0) / (arr.length || 1);
+
+function initStandaloneReport() {
+  recalculateAndRenderDashboard();
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  buildTrendChart();
+}
+
+function buildTrendChart() {
+  const canvasEl = document.getElementById('trendChartCanvas');
+  if (!canvasEl) return;
+  const ctx = canvasEl.getContext('2d');
+  if (trendChartInstance) trendChartInstance.destroy();
+
+  const f = telecomData.fibra;
+  const c = telecomData.cobre;
+  const months = f.months;
+
+  const datasets = [];
+
+  // 1. TNCC Fibra (%)
+  if (visibleSeries.tnccUltra) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Ultra (%)',
+      data: f.tncc,
+      borderColor: '#00D2FF',
+      backgroundColor: 'rgba(0, 210, 255, 0.12)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#00D2FF',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 1
+    });
+  }
+
+  // 2. TNCC Cobre (%)
+  if (visibleSeries.tnccCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'TNCC Aba Cobre (%)',
+      data: c.tncc,
+      borderColor: '#FF8C42',
+      backgroundColor: 'rgba(255, 140, 66, 0.08)',
+      fill: true,
+      tension: 0.25,
+      borderWidth: 3,
+      pointBackgroundColor: '#FF8C42',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'yTncc',
+      order: 2
+    });
+  }
+
+    // 3. Churn Fibra (%)
+  if (visibleSeries.churnFibra) {
+    const churnDataArr = f.churn || [0.40, 0.48, 1.40, 0.23, 0.33, 0.25, 11.70, 2.36, 2.60, 1.38];
+    datasets.push({
+      type: 'line',
+      label: 'Churn Fibra (%)',
+      data: churnDataArr,
+      borderColor: '#F43F5E',
+      backgroundColor: 'rgba(244, 63, 94, 0.10)',
+      fill: false,
+      tension: 0.25,
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointBackgroundColor: '#F43F5E',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointStyle: 'triangle',
+      yAxisID: 'yTncc',
+      order: 0
+    });
+  }
+
+  // 3. Balance Neto Fibra
+  if (visibleSeries.netFibra) {
+    const netF = f.instalaciones.map((inst, i) => inst - (f.retiros[i] || 0));
+    datasets.push({
+      type: 'line',
+      label: 'Balance Neto Fibra',
+      data: netF,
+      borderColor: '#38BDF8',
+      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+      borderWidth: 2.5,
+      tension: 0.2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#38BDF8',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      yAxisID: 'yFlujos',
+      order: 3
+    });
+  }
+
+  // 4. Cartera Fibra
+  if (visibleSeries.carteraFibra) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Cierre Fibra (Líneas)',
+      data: f.carteraCierre || f.carteraInicio,
+      borderColor: '#C084FC',
+      borderWidth: 2.5,
+      borderDash: [5, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#C084FC',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraFibra',
+      order: 4
+    });
+  }
+
+  // 5. Cartera Cobre
+  if (visibleSeries.carteraCobre) {
+    datasets.push({
+      type: 'line',
+      label: 'Cartera Cierre Cobre (Líneas)',
+      data: c.carteraCierre || c.carteraInicio,
+      borderColor: '#FBBF24',
+      borderWidth: 2.5,
+      borderDash: [6, 4],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#FBBF24',
+      pointBorderColor: '#fff',
+      yAxisID: 'yCarteraCobre',
+      order: 5
+    });
+  }
+
+  // 6. Instalaciones Fibra
+  if (visibleSeries.instFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Fibra',
+      data: f.instalaciones,
+      backgroundColor: 'rgba(16, 185, 129, 0.75)',
+      borderColor: '#10B981',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 6
+    });
+  }
+
+  // 7. Instalaciones Cobre
+  if (visibleSeries.instCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Instalaciones Cobre',
+      data: c.instalaciones,
+      backgroundColor: 'rgba(20, 184, 166, 0.7)',
+      borderColor: '#14b8a6',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 7
+    });
+  }
+
+  // 8. Retiros Fibra
+  if (visibleSeries.retFibra) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Fibra',
+      data: f.retiros,
+      backgroundColor: 'rgba(244, 63, 94, 0.7)',
+      borderColor: '#f43f5e',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 8
+    });
+  }
+
+  // 9. Retiros Cobre
+  if (visibleSeries.retCobre) {
+    datasets.push({
+      type: 'bar',
+      label: 'Retiros Cobre',
+      data: c.retiros,
+      backgroundColor: 'rgba(225, 29, 72, 0.65)',
+      borderColor: '#e11d48',
+      borderWidth: 1,
+      borderRadius: 4,
+      yAxisID: 'yFlujos',
+      order: 9
+    });
+  }
+
+  // Guías y Líneas de Benchmark
+  if (currentBenchmark === 'thresholds') {
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Excelente (+2.0%)',
+      data: Array(months.length).fill(2.0),
+      borderColor: 'rgba(16, 185, 129, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Umbral Saludable (+0.5%)',
+      data: Array(months.length).fill(0.5),
+      borderColor: 'rgba(0, 210, 255, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.4)',
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+    } else if (currentBenchmark === 'avgChurn') {
+    datasets.push({
+      type: 'line',
+      label: 'Promedio Churn Fibra (2.11%)',
+      data: Array(months.length).fill(2.11),
+      borderColor: '#F43F5E',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgUltra') {
+    const avgF = Number(avgArr(f.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: 'Promedio TNCC Fibra (' + formatPct(avgF) + ')',
+      data: Array(months.length).fill(avgF),
+      borderColor: '#00D2FF',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'avgCobre') {
+    const avgC = Number(avgArr(c.tncc).toFixed(2));
+    datasets.push({
+      type: 'line',
+      label: 'Promedio TNCC Cobre (' + formatPct(avgC) + ')',
+      data: Array(months.length).fill(avgC),
+      borderColor: '#FF8C42',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  } else if (currentBenchmark === 'zero') {
+    datasets.push({
+      type: 'line',
+      label: 'Línea Cero (0.0%)',
+      data: Array(months.length).fill(0.0),
+      borderColor: 'rgba(255, 255, 255, 0.5)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      yAxisID: 'yTncc',
+      order: 10
+    });
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    data: {
+      labels: months,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10, 6, 32, 0.95)',
+          borderColor: 'rgba(0, 210, 255, 0.4)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#e2e8f0',
+          padding: 12,
+          titleFont: { size: 13, weight: 'bold', family: 'Outfit' },
+          bodyFont: { size: 12, family: 'JetBrains Mono' },
+          boxPadding: 4,
+          callbacks: {
+            label: function(context) {
+              let l = context.dataset.label || '';
+              if (l) l += ': ';
+              if (context.dataset.yAxisID === 'yTncc') {
+                l += context.parsed.y.toFixed(2) + '%';
+              } else {
+                l += formatNum(context.parsed.y);
+              }
+              return l;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255, 255, 255, 0.08)' },
+          ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+        },
+        yTncc: {
+          type: 'linear',
+          position: 'right',
+          display: visibleSeries.tnccUltra || visibleSeries.tnccCobre || visibleSeries.churnFibra,
+          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          ticks: {
+            color: '#00D2FF',
+            font: { family: 'JetBrains Mono', size: 11 },
+            callback: v => v.toFixed(1) + '%'
+          },
+          title: {
+            display: true,
+            text: 'TNCC Porcentual (%)',
+            color: '#00D2FF',
+            font: { family: 'Outfit', size: 11, weight: 'bold' }
+          }
+        },
+        yFlujos: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.instFibra || visibleSeries.instCobre || visibleSeries.retFibra || visibleSeries.retCobre || visibleSeries.netFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#cbd5e1',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v >= 1000 || v <= -1000) ? (v/1000).toFixed(0) + 'k' : v
+          },
+          title: {
+            display: true,
+            text: 'Flujos (Instalaciones / Retiros / Balance)',
+            color: '#cbd5e1',
+            font: { family: 'Outfit', size: 11 }
+          }
+        },
+        yCarteraFibra: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraFibra,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#C084FC',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000).toFixed(0) + 'k'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Cierre Fibra',
+            color: '#C084FC',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        },
+        yCarteraCobre: {
+          type: 'linear',
+          position: 'left',
+          display: visibleSeries.carteraCobre,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: '#FBBF24',
+            font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => (v/1000000).toFixed(2) + 'M'
+          },
+          title: {
+            display: true,
+            text: 'Cartera Cierre Cobre',
+            color: '#FBBF24',
+            font: { family: 'Outfit', size: 10, weight: 'bold' }
+          }
+        }
+      }
+    }
+  });
+}
+
+function toggleSeries(seriesKey) {
+  visibleSeries[seriesKey] = !visibleSeries[seriesKey];
+  const btnMap = {
+    tnccUltra: 'toggleTnccUltra',
+    tnccCobre: 'toggleTnccCobre',
+    instFibra: 'toggleInstFibra',
+    instCobre: 'toggleInstCobre',
+    retFibra: 'toggleRetFibra',
+    retCobre: 'toggleRetCobre',
+    netFibra: 'toggleNetFibra',
+    carteraFibra: 'toggleCarteraFibra',
+    carteraCobre: 'toggleCarteraCobre'
+  };
+  const btn = document.getElementById(btnMap[seriesKey]);
+  if (btn) {
+    if (visibleSeries[seriesKey]) {
+      btn.classList.add('active');
+      btn.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = '<i data-lucide="eye" style="width:12px;height:12px;"></i> ' + btn.textContent.trim();
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+  buildTrendChart();
+}
+
+function changeBenchmark() {
+  currentBenchmark = document.getElementById('selectBenchmark').value;
+  buildTrendChart();
+}
+
+function switchView(view) {
+  currentView = view;
+  ['btnViewCombinado', 'btnViewUltra', 'btnViewCobre'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+
+  if (view === 'combinado') {
+    document.getElementById('btnViewCombinado').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'fibra') {
+    document.getElementById('btnViewUltra').classList.add('active');
+    visibleSeries.tnccUltra = true;
+    visibleSeries.tnccCobre = false;
+    visibleSeries.instFibra = true;
+    visibleSeries.instCobre = false;
+    visibleSeries.retFibra = true;
+    visibleSeries.retCobre = false;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = true;
+    visibleSeries.carteraCobre = false;
+  } else if (view === 'cobre') {
+    document.getElementById('btnViewCobre').classList.add('active');
+    visibleSeries.tnccUltra = false;
+    visibleSeries.tnccCobre = true;
+    visibleSeries.instFibra = false;
+    visibleSeries.instCobre = true;
+    visibleSeries.retFibra = false;
+    visibleSeries.retCobre = true;
+    visibleSeries.netFibra = false;
+    visibleSeries.carteraFibra = false;
+    visibleSeries.carteraCobre = true;
+  }
+
+  const syncBtn = (id, key, label) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('active', visibleSeries[key]);
+    const icon = visibleSeries[key] ? 'check' : 'eye';
+    el.innerHTML = '<i data-lucide="' + icon + '" style="width:12px;height:12px;"></i> ' + label;
+  };
+
+  syncBtn('toggleTnccUltra', 'tnccUltra', 'TNCC Fibra %');
+  syncBtn('toggleTnccCobre', 'tnccCobre', 'TNCC Cobre %');
+  syncBtn('toggleInstFibra', 'instFibra', 'Instalaciones Fibra');
+  syncBtn('toggleInstCobre', 'instCobre', 'Instalaciones Cobre');
+  syncBtn('toggleRetFibra', 'retFibra', 'Retiros Fibra');
+  syncBtn('toggleRetCobre', 'retCobre', 'Retiros Cobre');
+  syncBtn('toggleNetFibra', 'netFibra', 'Balance Neto Fibra');
+  syncBtn('toggleCarteraFibra', 'carteraFibra', 'Cartera Cierre Fibra');
+  syncBtn('toggleCarteraCobre', 'carteraCobre', 'Cartera Cierre Cobre');
+
+  if (window.lucide) lucide.createIcons();
+  buildTrendChart();
+}
+
+const INDICATOR_HELP_DATA = {
+  tncc: {
+    badge: '¿SABÍAS QUÉ?...',
+    title: 'Tasa Neta de Crecimiento de Cartera (TNCC)',
+    icon: 'trending-up',
+    color: '#00D2FF',
+    text: 'La Tasa Neta de Crecimiento de Cartera (TNCC): Mide si la base de clientes está realmente expandiéndose o contrayéndose tras descontar las pérdidas. Es el "termómetro" del crecimiento real del negocio en un periodo determinado. Permite diagnosticar si el esfuerzo de ventas compensa el ritmo de retiros, clasificando la velocidad a la que la empresa gana o cede participación en el mercado.'
+  },
+  eficiencia: {
+    badge: 'Eficiencia Comercial',
+    title: 'Instalación vs. Retiro',
+    icon: 'scale',
+    color: '#10b981',
+    text: 'Indica cuántos clientes nuevos entran a la empresa por cada cliente que decide retirarse. Es un indicador directo de la capacidad de reemplazo del equipo de ventas.'
+  },
+  cartera: {
+    badge: 'Cartera de Suscriptores',
+    title: 'Cartera de Suscriptores',
+    icon: 'users',
+    color: '#3b82f6',
+    text: 'Mide la base consolidada de clientes con servicio activo al cierre de cada ciclo comparada con la cartera inicial, reflejando el balance global y el ritmo de retención o contracción de la cartera de abonados.'
+  },
+  balance: {
+    badge: 'Balance de Flujos Netos',
+    title: 'Balance de Flujos Netos',
+    icon: 'arrow-left-right',
+    color: '#c084fc',
+    text: 'Es el resultado neto definitivo en cartera de clientes (+Instalaciones - Retiros); refleja si al final del período la empresa quedó con más o menos hogares conectados tras comparar todas las instalaciones contra todas los retiros'
+  }
+};
+
+function openIndicatorHelp(indicatorKey) {
+  const data = INDICATOR_HELP_DATA[indicatorKey];
+  if (!data) return;
+
+  const titleEl = document.getElementById('indicatorHelpTitle');
+  const bodyEl = document.getElementById('indicatorHelpBody');
+  const badgeEl = document.getElementById('indicatorHelpBadge');
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (bodyEl) bodyEl.innerHTML = '<p>' + data.text + '</p>';
+  if (badgeEl) {
+    badgeEl.innerHTML = '<i data-lucide="' + data.icon + '" style="width:14px;height:14px;color:' + data.color + '"></i> <span style="color:' + data.color + '">' + data.badge + '</span>';
+  }
+
+  openCustomModal('indicatorHelpModal');
+}
+
+function openWelcomePopup() {
+  openCustomModal('welcomeModal');
+}
+
+function openCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'flex';
+  modal.classList.add('active');
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function closeCustomModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.style.display = 'none';
+}
+
+function handleCustomModalOverlayClick(e, modalId) {
+  if (e.target === e.currentTarget || e.target.classList.contains('custom-modal-overlay') || e.target.id === modalId) {
+    closeCustomModal(modalId);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' || e.key === 'Esc') {
+    closeCustomModal('welcomeModal');
+    closeCustomModal('indicatorHelpModal');
+  }
+});
+
+function initStandaloneReport() {
+  recalculateAndRenderDashboard();
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  buildTrendChart();
+  setTimeout(() => {
+    openWelcomePopup();
+  }, 350);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initStandaloneReport);
+} else {
+  initStandaloneReport();
+}
+`;
+
+  // 8. Remueve la etiqueta anterior de app.js e inyecta el script standalone al final del <body>
+  const scriptApp = clone.querySelector('script[src*="app.js"]');
+  if (scriptApp) scriptApp.remove();
+
+  const inlineScriptEl = document.createElement('script');
+  inlineScriptEl.textContent = standaloneScriptContent;
+  const bodyTarget = clone.querySelector('body') || clone;
+  bodyTarget.appendChild(inlineScriptEl);
+
+  // 9. Genera el Blob y descarga inmediata sin latencia ni dependencias de red
+  try {
+    const htmlOutput = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([htmlOutput], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'TNCC_Reporte_Combinado_Cobre_Fibra.html';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      if (link.parentNode) link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 2500);
+  } catch (err) {
+    console.warn('Fallo en descarga Blob, redirigiendo a archivo independiente:', err);
+    window.location.href = 'TNCC_Reporte_Combinado_Cobre_Fibra.html';
+  }
+}
+
+// Inicializar al cargar el documento (soporte inmediato y diferido)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  initDashboard();
+}
